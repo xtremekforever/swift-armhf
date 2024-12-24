@@ -16,5 +16,6 @@ docker run \
     -e SWIFT_VERSION=${SWIFT_TAG} \
     -e STAGING_DIR=${STAGING_DIR} \
     -e INSTALL_TAR=${INSTALL_TAG} \
+    -e SWIFT_TARGET_ARCH=${SWIFT_TARGET_ARCH} \
     ${DOCKER_TAG} \
     ./build.sh

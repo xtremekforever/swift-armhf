@@ -49,8 +49,8 @@ echo "Install Foundation"
 (cd $FOUNDATION_BUILDDIR && ninja install)
 
 echo "Fix-up archs"
-find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftmodule" -execdir mv {} armv7-unknown-linux-gnueabihf.swiftmodule \;
-find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftdoc" -execdir mv {} armv7-unknown-linux-gnueabihf.swiftdoc \;
+find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftmodule" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftmodule \;
+find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftdoc" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftdoc \;
 
 # Restore Dispatch headers
 cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
@@ -58,6 +58,6 @@ cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
 echo "Install Foundation into sysroot"
 FOUNDATION_MODULES_DIR=${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)"
 if [ -d $FOUNDATION_MODULES_DIR ]; then
-    mv ${FOUNDATION_MODULES_DIR} ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux/armv7
+    mv ${FOUNDATION_MODULES_DIR} ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux/${SWIFT_TARGET_ARCH}
 fi
 cp -rf ${FOUNDATION_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

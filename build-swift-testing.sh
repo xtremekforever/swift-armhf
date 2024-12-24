@@ -34,8 +34,8 @@ echo "Install swift-testing"
 (cd $SWIFT_TESTING_BUILDDIR && ninja install)
 
 echo "Fix-up archs"
-find ${SWIFT_TESTING_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftmodule" -execdir mv {} armv7-unknown-linux-gnueabihf.swiftmodule \;
-find ${SWIFT_TESTING_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftdoc" -execdir mv {} armv7-unknown-linux-gnueabihf.swiftdoc \;
+find ${SWIFT_TESTING_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftmodule" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftmodule \;
+find ${SWIFT_TESTING_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftdoc" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftdoc \;
 
 echo "Install swift-testing to sysroot"
 cp -rf ${SWIFT_TESTING_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
