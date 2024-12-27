@@ -5,15 +5,19 @@ set -e
 SRC_ROOT=$(pwd)
 
 CONTAINER_NAME=swift-armv7-sysroot
-DISTRIUBTION=$1
-SYSROOT=$2
+DISTRIBUTION_NAME=$1
+DISTRIUBTION_VERSION=$2
+SYSROOT=$3
 
 if [ -z $SYSROOT ]; then
-    SYSROOT=sysroot-$(echo "$DISTRIUBTION" | tr : -)
+    SYSROOT=sysroot-$DISTRIBUTION_NAME-$DISTRIUBTION_VERSION
 fi
+SYSROOT=$(pwd)/$SYSROOT
 
-case $DISTRIUBTION in
-    ubuntu:focal)
+DISTRIBUTION="$DISTRIBUTION_NAME:$DISTRIUBTION_VERSION"
+
+case $DISTRIUBTION_VERSION in
+    "focal")
         INSTALL_DEPS_CMD=" \
             apt-get update && \
             apt-get install -y \
@@ -29,7 +33,9 @@ case $DISTRIUBTION in
                 libsystemd-dev \
         "
         ;;
-    "debian:bullseye")
+    "bullseye")
+        RASPIOS_VERSION="2024-10-22"
+        RASPIOS_URL=https://downloads.raspberrypi.com/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2024-10-28
         INSTALL_DEPS_CMD=" \
             apt-get update && \
             apt-get install -y \
@@ -45,7 +51,9 @@ case $DISTRIUBTION in
                 libsystemd-dev \
         "
         ;;
-    "ubuntu:jammy" | "debian:bookworm")
+    "jammy" | "bookworm")
+        RASPIOS_VERSION="2024-11-19"
+        RASPIOS_URL=https://downloads.raspberrypi.com/raspios_lite_armhf/images/raspios_lite_armhf-$RASPIOS_VERSION
         INSTALL_DEPS_CMD=" \
             apt-get update && \
             apt-get install -y \
@@ -61,7 +69,7 @@ case $DISTRIUBTION in
                 libsystemd-dev \
         "
         ;;
-    "ubuntu:mantic" | "ubuntu:noble")
+    "mantic" | "noble")
         INSTALL_DEPS_CMD=" \
             apt-get update && \
             apt-get install -y \
@@ -86,38 +94,85 @@ esac
 
 if [ ! -z $EXTRA_PACKAGES ]; then
     echo "Including extra packages: $EXTRA_PACKAGES"
-    INSTALL_DEPS_CMD="$INSTALL_DEPS_CMD && apt-get install -y $EXTRA_PACKAGES"
+    INSTALL_DEPS_CMD="$INSTALL_DEPS_CMD && apt-get install -y $EXTRA_PACKAGES --no-optional"
 fi
 
-echo "Starting up qemu emulation"
-docker run --privileged --rm tonistiigi/binfmt --install all
+if [[ $DISTRIBUTION_NAME = "debian" ]]; then
+    echo "Installing host dependencies..."
+    sudo apt update && sudo apt install qemu-user-static p7zip xz-utils
 
-echo "Building $DISTRIUBTION distribution for sysroot"
-docker rm --force $CONTAINER_NAME
-docker run \
-    --platform linux/armhf \
-    --name $CONTAINER_NAME \
-    $DISTRIUBTION \
-    /bin/bash -c "$INSTALL_DEPS_CMD"
+    mkdir artifacts && true
+    cd artifacts
 
-echo "Extracting sysroot folders to $SYSROOT"
-rm -rf $SYSROOT
-mkdir -p $SYSROOT/usr
-docker cp $CONTAINER_NAME:/lib $SYSROOT/lib
-docker cp $CONTAINER_NAME:/usr/lib $SYSROOT/usr/lib
-docker cp $CONTAINER_NAME:/usr/include $SYSROOT/usr/include
+    # Use Raspberry Pi OS to build for debian to support armv6
+    echo "Downloading raspios $RASPBIAN_VERSION for $DISTRIUBTION_VERSION..."
+    IMAGE_FILE=$RASPIOS_VERSION-raspios-$DISTRIUBTION_VERSION-armhf-lite.img
+    DOWNLOAD_URL=$RASPIOS_URL/$IMAGE_FILE.xz
+    wget -N $DOWNLOAD_URL
 
-# Find broken links, re-copy
-cd $SYSROOT
-BROKEN_LINKS=$(find . -xtype l)
-while IFS= read -r link; do
-    # Ignore empty links
-    if [ -z "${link}" ]; then continue; fi
+    echo "Uncompressing $IMAGE_FILE.gz and extracting contents..."
+    xz -dk $IMAGE_FILE.xz && true
+    7z e -y $IMAGE_FILE
 
-    echo "Replacing broken symlink: $link"
-    link=$(echo $link | sed '0,/./ s/.//')
-    docker cp -L $CONTAINER_NAME:$link $(dirname .$link)
-done <<< "$BROKEN_LINKS"
+    echo "Mounting 1.img to install additional dependencies..."
+    rm -rf sysroot && mkdir sysroot
+    sudo mount -o loop 1.img sysroot
+    sudo mount --bind /dev sysroot/dev
+    sudo mount --bind /dev/pts sysroot/dev/pts
+    sudo mount --bind /proc sysroot/proc
+    sudo mount --bind /sys sysroot/sys
 
-echo "Cleaning up"
-docker rm $CONTAINER_NAME
+    echo "Starting chroot to install dependencies..."
+    sudo cp /usr/bin/qemu-arm-static sysroot/usr/bin
+    REMOVE_DEPS_CMD="apt remove -y --purge \
+        apparmor \
+        linux-image* \
+        *firmware* \
+    "
+    sudo chroot sysroot qemu-arm-static /bin/bash -c "$REMOVE_DEPS_CMD && $INSTALL_DEPS_CMD"
+
+    echo "Copying files from sysroot to $SYSROOT..."
+    rm -rf $SYSROOT
+    mkdir -p $SYSROOT/usr
+    cp -r sysroot/lib $SYSROOT/lib
+    cp -r sysroot/usr/lib $SYSROOT/usr/lib
+    cp -r sysroot/usr/include $SYSROOT/usr/include
+
+    echo "Umounting and cleaning up..."
+    sudo umount -R sysroot
+    rm *.fat
+    rm *.img
+else
+    echo "Starting up qemu emulation"
+    docker run --privileged --rm tonistiigi/binfmt --install all
+
+    echo "Building $DISTRIUBTION distribution for sysroot"
+    docker rm --force $CONTAINER_NAME
+    docker run \
+        --platform linux/armhf \
+        --name $CONTAINER_NAME \
+        $DISTRIUBTION \
+        /bin/bash -c "$INSTALL_DEPS_CMD"
+
+    echo "Extracting sysroot folders to $SYSROOT"
+    rm -rf $SYSROOT
+    mkdir -p $SYSROOT/usr
+    docker cp $CONTAINER_NAME:/lib $SYSROOT/lib
+    docker cp $CONTAINER_NAME:/usr/lib $SYSROOT/usr/lib
+    docker cp $CONTAINER_NAME:/usr/include $SYSROOT/usr/include
+
+    # Find broken links, re-copy
+    cd $SYSROOT
+    BROKEN_LINKS=$(find . -xtype l)
+    while IFS= read -r link; do
+        # Ignore empty links
+        if [ -z "${link}" ]; then continue; fi
+
+        echo "Replacing broken symlink: $link"
+        link=$(echo $link | sed '0,/./ s/.//')
+        docker cp -L $CONTAINER_NAME:$link $(dirname .$link)
+    done <<< "$BROKEN_LINKS"
+
+    echo "Cleaning up"
+    docker rm $CONTAINER_NAME
+fi
