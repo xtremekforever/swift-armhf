@@ -2,18 +2,19 @@ name: Build Swift Latest
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/armv6" ]
   pull_request:
     branches: [ "main" ]
 
 env:
-  DISTRIBUTION: debian-bookworm
+  DISTRIBUTION: raspios-bookworm
 
 jobs:
   build-latest:
     strategy:
       matrix:
         version: ["6.0.3"]
+        swift-target-arch: ["armv6", "armv7"]
     env:
       SWIFT_VERSION: ${{ matrix.version }}
       SWIFT_TAG: swift-${{ matrix.version }}-RELEASE
@@ -35,5 +36,6 @@ jobs:
       name: Build & Publish Swift
       with:
         swift-tag: ${{ env.SWIFT_TAG }}
+        swift-target-arch: ${{ matrix.swift-target-arch }}
         distribution: ${{ env.DISTRIBUTION }}
         builder-tag: ${{ env.SWIFT_VERSION }}

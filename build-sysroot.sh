@@ -10,9 +10,8 @@ DISTRIUBTION_VERSION=$2
 SYSROOT=$3
 
 if [ -z $SYSROOT ]; then
-    SYSROOT=sysroot-$DISTRIBUTION_NAME-$DISTRIUBTION_VERSION
+    SYSROOT=$(pwd)/sysroot-$DISTRIBUTION_NAME-$DISTRIUBTION_VERSION
 fi
-SYSROOT=$(pwd)/$SYSROOT
 
 DISTRIBUTION="$DISTRIBUTION_NAME:$DISTRIUBTION_VERSION"
 
@@ -97,14 +96,14 @@ if [ ! -z $EXTRA_PACKAGES ]; then
     INSTALL_DEPS_CMD="$INSTALL_DEPS_CMD && apt-get install -y $EXTRA_PACKAGES --no-optional"
 fi
 
-if [[ $DISTRIBUTION_NAME = "debian" ]]; then
+# This is for supporting armv6
+if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     echo "Installing host dependencies..."
     sudo apt update && sudo apt install qemu-user-static p7zip xz-utils
 
     mkdir artifacts && true
     cd artifacts
 
-    # Use Raspberry Pi OS to build for debian to support armv6
     echo "Downloading raspios $RASPBIAN_VERSION for $DISTRIUBTION_VERSION..."
     IMAGE_FILE=$RASPIOS_VERSION-raspios-$DISTRIUBTION_VERSION-armhf-lite.img
     DOWNLOAD_URL=$RASPIOS_URL/$IMAGE_FILE.xz
