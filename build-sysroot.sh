@@ -112,7 +112,7 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     echo "Downloading raspios $RASPBIAN_VERSION for $DISTRIUBTION_VERSION..."
     IMAGE_FILE=$RASPIOS_VERSION-raspios-$DISTRIUBTION_VERSION-armhf-lite.img
     DOWNLOAD_URL=$RASPIOS_URL/$IMAGE_FILE.xz
-    wget -N $DOWNLOAD_URL
+    wget -q -N $DOWNLOAD_URL
 
     echo "Uncompressing $IMAGE_FILE.gz and extracting contents..."
     xz -dk $IMAGE_FILE.xz && true
@@ -138,7 +138,7 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     echo "Copying files from sysroot to $SYSROOT..."
     rm -rf $SYSROOT
     mkdir -p $SYSROOT/usr
-    sudo chroot sysroot qemu-arm-static /bin/bash -c "symlinks -cr /usr"
+    sudo chroot sysroot qemu-arm-static /bin/bash -c "symlinks -cr /usr/lib"
     cp -r sysroot/lib $SYSROOT/lib
     cp -r sysroot/usr/lib $SYSROOT/usr/lib
     cp -r sysroot/usr/include $SYSROOT/usr/include

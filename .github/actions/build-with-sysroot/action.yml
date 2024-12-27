@@ -19,7 +19,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - name: Build
+  - name: Restore Sysroot
+    id: restore-sysroot
+    uses: actions/cache/restore@v4
+    with:
+      key: ${{ inputs.sysroot-name }}
+      path: ${{ inputs.sysroot-name }}
+  - if: ${{ steps.restore-sysroot.outputs.cache-hit != 'true' }}
+    name: Build Sysroot
     shell: bash
     env:
       DISTRIBUTION: ${{ inputs.distribution }}
@@ -27,6 +34,13 @@ runs:
   - name: Compress
     shell: bash
     run: tar -czf ${{ inputs.sysroot-name }}.tar.gz ${{ inputs.sysroot-name }}
+  - name: Cache Sysroot
+    id: cache-sysroot
+    if: steps.restore-sysroot.outputs.cache-hit != 'true'
+    uses: actions/cache/save@v4
+    with:
+      key: ${{ inputs.sysroot-name }}
+      path: ${{ inputs.sysroot-name }}
   - name: Build Swift
     shell: bash
     run: |
@@ -34,7 +48,7 @@ runs:
         -e SWIFT_VERSION=${{ inputs.swift-tag }} \
         -e INSTALL_TAR=$(pwd)/${{ inputs.swift-tag }}-${{ inputs.distribution }}-${{ inputs.swift-target-arch }}-install.tar.gz \
         -e STAGING_DIR=$(pwd)/${{ inputs.sysroot-name }} \
-        -e SWIFT_TARGET_ARCH=${{ inputs.swift-target-arch }}
+        -e SWIFT_TARGET_ARCH=${{ inputs.swift-target-arch }} \
         -e SKIP_FETCH_SOURCES=1 \
         xtremekforever/swift-builder:${{ inputs.builder-tag }} \
         /bin/bash ./build.sh
