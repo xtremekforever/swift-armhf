@@ -2,7 +2,7 @@ name: Build Swift Latest
 
 on:
   push:
-    branches: [ "main", "feature/armv6" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
