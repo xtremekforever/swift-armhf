@@ -10,8 +10,9 @@ DISTRIUBTION_VERSION=$2
 SYSROOT=$3
 
 if [ -z $SYSROOT ]; then
-    SYSROOT=$(pwd)/sysroot-$DISTRIBUTION_NAME-$DISTRIUBTION_VERSION
+    SYSROOT=sysroot-$DISTRIBUTION_NAME-$DISTRIUBTION_VERSION
 fi
+SYSROOT=$(pwd)/$SYSROOT
 
 DISTRIBUTION="$DISTRIBUTION_NAME:$DISTRIUBTION_VERSION"
 
@@ -91,9 +92,13 @@ case $DISTRIUBTION_VERSION in
         ;;
 esac
 
+if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
+    INSTALL_DEPS_CMD="$INSTALL_DEPS_CMD symlinks"
+fi
+
 if [ ! -z $EXTRA_PACKAGES ]; then
     echo "Including extra packages: $EXTRA_PACKAGES"
-    INSTALL_DEPS_CMD="$INSTALL_DEPS_CMD && apt-get install -y $EXTRA_PACKAGES --no-optional"
+    INSTALL_DEPS_CMD="$INSTALL_DEPS_CMD && apt-get install -y $EXTRA_PACKAGES"
 fi
 
 # This is for supporting armv6
@@ -133,6 +138,7 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     echo "Copying files from sysroot to $SYSROOT..."
     rm -rf $SYSROOT
     mkdir -p $SYSROOT/usr
+    sudo chroot sysroot qemu-arm-static /bin/bash -c "symlinks -cr /usr"
     cp -r sysroot/lib $SYSROOT/lib
     cp -r sysroot/usr/lib $SYSROOT/usr/lib
     cp -r sysroot/usr/include $SYSROOT/usr/include
