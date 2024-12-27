@@ -4,7 +4,6 @@ set -e
 
 SRC_ROOT=$(pwd)
 
-CONTAINER_NAME=swift-armv7-sysroot
 DISTRIBUTION_NAME=$1
 DISTRIUBTION_VERSION=$2
 SYSROOT=$3
@@ -156,12 +155,14 @@ else
     echo "Starting up qemu emulation"
     docker run --privileged --rm tonistiigi/binfmt --install all
 
-    echo "Building $DISTRIUBTION distribution for sysroot"
+    CONTAINER_NAME=swift-armhf-sysroot
+
+    echo "Building $DISTRIBUTION distribution for sysroot"
     docker rm --force $CONTAINER_NAME
     docker run \
         --platform linux/armhf \
         --name $CONTAINER_NAME \
-        $DISTRIUBTION \
+        $DISTRIBUTION \
         /bin/bash -c "$INSTALL_DEPS_CMD"
 
     echo "Extracting sysroot folders to $SYSROOT"
