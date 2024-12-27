@@ -109,7 +109,7 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     mkdir artifacts && true
     cd artifacts
 
-    echo "Downloading raspios $RASPBIAN_VERSION for $DISTRIUBTION_VERSION..."
+    echo "Downloading raspios $RASPIOS_VERSION for $DISTRIUBTION_VERSION..."
     IMAGE_FILE=$RASPIOS_VERSION-raspios-$DISTRIUBTION_VERSION-armhf-lite.img
     DOWNLOAD_URL=$RASPIOS_URL/$IMAGE_FILE.xz
     wget -q -N $DOWNLOAD_URL
@@ -118,7 +118,7 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     xz -dk $IMAGE_FILE.xz && true
     7z e -y $IMAGE_FILE
 
-    echo "Mounting 1.img to install additional dependencies..."
+    echo "Mounting 1.img and needed passthroughs..."
     rm -rf sysroot && mkdir sysroot
     sudo mount -o loop 1.img sysroot
     sudo mount --bind /dev sysroot/dev
@@ -128,20 +128,26 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
 
     echo "Starting chroot to install dependencies..."
     sudo cp /usr/bin/qemu-arm-static sysroot/usr/bin
-    REMOVE_DEPS_CMD="apt remove -y --purge \
+    REMOVE_DEPS_CMD="apt-get remove -y --purge \
         apparmor \
+        bluez \
+        network-manager \
         linux-image* \
         *firmware* \
+        raspi* \
+        && apt-get autoremove -y \
     "
     sudo chroot sysroot qemu-arm-static /bin/bash -c "$REMOVE_DEPS_CMD && $INSTALL_DEPS_CMD"
 
     echo "Copying files from sysroot to $SYSROOT..."
     rm -rf $SYSROOT
-    mkdir -p $SYSROOT/usr
+    mkdir -p $SYSROOT/usr/lib
     sudo chroot sysroot qemu-arm-static /bin/bash -c "symlinks -cr /usr/lib"
     cp -r sysroot/lib $SYSROOT/lib
-    cp -r sysroot/usr/lib $SYSROOT/usr/lib
     cp -r sysroot/usr/include $SYSROOT/usr/include
+    cp -r sysroot/usr/lib/arm-linux-gnueabihf $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib/gcc $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib/ld-linux-armhf.so.3 $SYSROOT/usr/lib/
 
     echo "Umounting and cleaning up..."
     sudo umount -R sysroot

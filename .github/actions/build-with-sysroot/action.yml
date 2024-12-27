@@ -57,6 +57,7 @@ runs:
     run: |
       INSTALLABLE_SDK_PACKAGE=$(pwd)/${{ inputs.swift-tag }}-${{ inputs.distribution }}-${{ inputs.swift-target-arch }}-sdk.tar.gz \
       SYSROOT=${{ inputs.sysroot-name }} \
+      TARGET_ARCH=${{ inputs.swift-target-arch }} \
         ./build-linux-cross-sdk.sh ${{ inputs.swift-tag }} ${{ inputs.distribution }}
   - name: Test SDK for Linux
     shell: bash
