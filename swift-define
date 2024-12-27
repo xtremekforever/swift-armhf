@@ -4,7 +4,7 @@ SWIFT_TARGET_ARCH=${SWIFT_TARGET_ARCH:=armv7}
 
 case ${SWIFT_TARGET_ARCH} in
     armv6)
-        EXTRA_FLAGS=""
+        EXTRA_FLAGS="-mfpu=vfpv2 -mfloat-abi=hard"
         ;;
     armv7)
         EXTRA_FLAGS="-mfloat-abi=hard"
@@ -57,7 +57,7 @@ INSTALL_TAR=${INSTALL_TAR:=$SRC_ROOT/build/swift-$SWIFT_TARGET_ARCH-$SWIFT_VERSI
 PREBUILT_XCTOOLCHAIN=$SRC_ROOT/downloads/${SWIFT_VERSION}-osx.pkg
 
 # Compilation flags
-RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
+RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
 LINK_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS} -latomic"
 ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
 
