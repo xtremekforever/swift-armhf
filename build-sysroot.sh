@@ -135,19 +135,18 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
         linux-image* \
         *firmware* \
         raspi* \
+        rpi* \
         && apt-get autoremove -y \
     "
     sudo chroot sysroot qemu-arm-static /bin/bash -c "$REMOVE_DEPS_CMD && $INSTALL_DEPS_CMD"
 
     echo "Copying files from sysroot to $SYSROOT..."
     rm -rf $SYSROOT
-    mkdir -p $SYSROOT/usr/lib
+    mkdir -p $SYSROOT/usr
     sudo chroot sysroot qemu-arm-static /bin/bash -c "symlinks -cr /usr/lib"
     cp -r sysroot/lib $SYSROOT/lib
     cp -r sysroot/usr/include $SYSROOT/usr/include
-    cp -r sysroot/usr/lib/arm-linux-gnueabihf $SYSROOT/usr/lib/
-    cp -r sysroot/usr/lib/gcc $SYSROOT/usr/lib/
-    cp -r sysroot/usr/lib/ld-linux-armhf.so.3 $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib $SYSROOT/usr/lib
 
     echo "Umounting and cleaning up..."
     sudo umount -R sysroot
