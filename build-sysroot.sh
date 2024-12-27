@@ -95,7 +95,7 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 echo "Building $DISTRIUBTION distribution for sysroot"
 docker rm --force $CONTAINER_NAME
 docker run \
-    --platform linux/arm/v7 \
+    --platform linux/armhf \
     --name $CONTAINER_NAME \
     $DISTRIUBTION \
     /bin/bash -c "$INSTALL_DEPS_CMD"
