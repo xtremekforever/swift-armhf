@@ -9,6 +9,10 @@ Some main goals:
 - Provide SDKs that can be downloaded and used to cross-compile user applications and libraries to armv7.
 - Maintain a CI that can build snapshots/nightly versions of Swift to find and fix issues.
 
+NOTE: Building for armv6 is also now supported, although it is limited to working with the `raspios`
+distribution since that is the only version of Debian that supports the ARMv6 architecture. However,
+this makes this project also compatible with older Raspberry Pi models such as the RPI 1, Zero, and so on.
+
 ## Compilation
 
 There are various options for compiling Swift for armv7 with these scripts.

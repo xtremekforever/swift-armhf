@@ -43,5 +43,6 @@ jobs:
       name: Build & Publish Swift
       with:
         swift-tag: ${{ env.SWIFT_TAG }}
+        swift-target-arch: armv7
         distribution: ${{ env.DISTRIBUTION }}
         builder-tag: ${{ env.SWIFT_VERSION }}
