@@ -2,9 +2,7 @@ name: Build Swift Release
 
 on:
   push:
-    branches: [ "feature/**" ]
-  release:
-    types: [published]
+    branches: [ "release/6.0.3" ]
 
 env:
   SWIFT_VERSION: 6.0.3
