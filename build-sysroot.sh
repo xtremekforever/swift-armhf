@@ -118,6 +118,7 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     7z e -y $IMAGE_FILE
 
     echo "Mounting 1.img and needed passthroughs..."
+    sudo umount -R sysroot && true
     rm -rf sysroot && mkdir sysroot
     sudo mount -o loop 1.img sysroot
     sudo mount --bind /dev sysroot/dev
@@ -133,19 +134,25 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
         network-manager \
         linux-image* \
         *firmware* \
+        openssh* \
+        p7zip* \
+        perl \
+        perl-modules* \
         raspi* \
         rpi* \
-        && apt-get autoremove -y \
     "
-    sudo chroot sysroot qemu-arm-static /bin/bash -c "$REMOVE_DEPS_CMD && $INSTALL_DEPS_CMD"
+    sudo chroot sysroot qemu-arm-static /bin/bash -c "$REMOVE_DEPS_CMD && $INSTALL_DEPS_CMD && apt-get autoremove -y"
 
     echo "Copying files from sysroot to $SYSROOT..."
     rm -rf $SYSROOT
-    mkdir -p $SYSROOT/usr
+    mkdir -p $SYSROOT/usr/lib
     sudo chroot sysroot qemu-arm-static /bin/bash -c "symlinks -cr /usr/lib"
     cp -r sysroot/lib $SYSROOT/lib
     cp -r sysroot/usr/include $SYSROOT/usr/include
-    cp -r sysroot/usr/lib $SYSROOT/usr/lib
+    cp -r sysroot/usr/lib/*.so* $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib/arm-linux-gnueabihf $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib/linux $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib/gcc $SYSROOT/usr/lib/
 
     echo "Umounting and cleaning up..."
     sudo umount -R sysroot

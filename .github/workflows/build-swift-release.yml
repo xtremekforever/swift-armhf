@@ -55,7 +55,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        name: Swift ${{ env.SWIFT_VERSION }} for armv7
+        name: Swift ${{ env.SWIFT_VERSION }} for armhf
         tag: ${{ env.SWIFT_VERSION }}
         commit: ${{ github.sha }}
         artifactErrorsFailBuild: true
@@ -92,7 +92,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        name: Swift ${{ env.SWIFT_VERSION }} for armv6/armv7
+        name: Swift ${{ env.SWIFT_VERSION }} for armhf
         tag: ${{ env.SWIFT_VERSION }}
         commit: ${{ github.sha }}
         artifactErrorsFailBuild: false
