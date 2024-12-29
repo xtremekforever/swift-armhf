@@ -6,15 +6,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  DISTRIBUTION: debian-bookworm
-
 jobs:
   build-latest:
     strategy:
       matrix:
         version: ["6.0.3"]
         swift-target-arch: ["armv7"]
+        distribution: ["debian-bookworm"]
+        include:
+          - version: "6.0.3"
+            swift-target-arch: "armv6"
+            distribution: "raspios-bookworm"
     env:
       SWIFT_VERSION: ${{ matrix.version }}
       SWIFT_TAG: swift-${{ matrix.version }}-RELEASE
@@ -37,5 +39,5 @@ jobs:
       with:
         swift-tag: ${{ env.SWIFT_TAG }}
         swift-target-arch: ${{ matrix.swift-target-arch }}
-        distribution: ${{ env.DISTRIBUTION }}
+        distribution: ${{ matrix.distribution }}
         builder-tag: ${{ env.SWIFT_VERSION }}
