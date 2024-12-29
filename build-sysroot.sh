@@ -113,8 +113,10 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     DOWNLOAD_URL=$RASPIOS_URL/$IMAGE_FILE.xz
     wget -q -N $DOWNLOAD_URL
 
-    echo "Uncompressing $IMAGE_FILE.gz and extracting contents..."
-    xz -dk $IMAGE_FILE.xz && true
+    if [ ! -f $IMAGE_FILE ]; then
+        echo "Uncompressing $IMAGE_FILE.gz and extracting contents..."
+        xz -dk $IMAGE_FILE.xz && true
+    fi
     7z e -y $IMAGE_FILE
 
     echo "Mounting 1.img and needed passthroughs..."
@@ -126,7 +128,7 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     sudo mount --bind /proc sysroot/proc
     sudo mount --bind /sys sysroot/sys
 
-    echo "Starting chroot to install dependencies..."
+    # echo "Starting chroot to install dependencies..."
     sudo cp /usr/bin/qemu-arm-static sysroot/usr/bin
     REMOVE_DEPS_CMD="apt-get remove -y --purge \
         apparmor \
@@ -140,21 +142,32 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
         perl-modules* \
         raspi* \
         rpi* \
+        libqt5core5a \
     "
     sudo chroot sysroot qemu-arm-static /bin/bash -c "$REMOVE_DEPS_CMD && $INSTALL_DEPS_CMD && apt-get autoremove -y"
 
     echo "Copying files from sysroot to $SYSROOT..."
     rm -rf $SYSROOT
-    mkdir -p $SYSROOT/usr
-    sudo chroot sysroot qemu-arm-static /bin/bash -c "symlinks -cr /usr/lib"
+    mkdir -p $SYSROOT/usr/lib
+    sudo chroot sysroot qemu-arm-static /bin/bash -c "apt list --installed && symlinks -cr /usr/include && symlinks -cr /usr/lib"
     cp -r sysroot/lib $SYSROOT/lib
     cp -r sysroot/usr/include $SYSROOT/usr/include
-    cp -r sysroot/usr/lib $SYSROOT/usr/lib
+    cp -r sysroot/usr/lib/ld-linux-armhf.so.3 $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib/os-release $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib/arm-linux-gnueabihf $SYSROOT/usr/lib/
+    cp -r sysroot/usr/lib/linux $SYSROOT/usr/lib/ && true
+    cp -r sysroot/usr/lib/gcc $SYSROOT/usr/lib/
+
+    # Cleanup
+    rm -rf $SYSROOT/usr/include/aarch64-linux-gnu
+    rm -rf $SYSROOT/usr/lib/gcc/arm-linux-gnueabihf/7
+    rm -rf $SYSROOT/usr/lib/gcc/arm-linux-gnueabihf/7.5.0
+    rm -rf $SYSROOT/usr/lib/gcc/arm-linux-gnueabihf/8
 
     echo "Umounting and cleaning up..."
     sudo umount -R sysroot
-    rm *.fat
-    rm *.img
+    rm -f *.fat
+    rm -f *.img
 else
     echo "Starting up qemu emulation"
     docker run --privileged --rm tonistiigi/binfmt --install all
