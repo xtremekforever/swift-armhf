@@ -10,22 +10,20 @@ jobs:
   build-latest:
     strategy:
       matrix:
-        version: ["6.0.3"]
         swift-target-arch: ["armv7"]
         distribution: ["debian-bookworm"]
         include:
-          - version: "6.0.3"
-            swift-target-arch: "armv6"
+          - swift-target-arch: "armv6"
             distribution: "raspios-bookworm"
     env:
-      SWIFT_VERSION: ${{ matrix.version }}
-      SWIFT_TAG: swift-${{ matrix.version }}-RELEASE
+      SWIFT_VERSION: 6.0.3
+      SWIFT_TAG: swift-6.0.3-RELEASE
     name: Build Swift
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/checkout-swift
-      name: Fetch Swift Sources
+      name: Fetch Swift ${{ env.SWIFT_TAG }}
       with:
         swift-tag: ${{ env.SWIFT_TAG }}
         swift-workspace-cache: swift-workspace
@@ -35,7 +33,7 @@ jobs:
         source ./swift-builder/swift-builder-common
         ./swift-builder/build-container.sh
     - uses: ./.github/actions/build-for-distribution
-      name: Build & Publish Swift
+      name: Build & Publish Swift ${{ env.SWIFT_VERSION }}
       with:
         swift-tag: ${{ env.SWIFT_TAG }}
         swift-target-arch: ${{ matrix.swift-target-arch }}
