@@ -128,8 +128,7 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
     sudo mount --bind /proc sysroot/proc
     sudo mount --bind /sys sysroot/sys
 
-    # echo "Starting chroot to install dependencies..."
-    sudo cp /usr/bin/qemu-arm-static sysroot/usr/bin
+    echo "Starting chroot to update dependencies & fix symlinks..."
     REMOVE_DEPS_CMD="apt-get remove -y --purge \
         apparmor \
         bluez \
@@ -144,12 +143,13 @@ if [[ $DISTRIBUTION_NAME = "raspios" ]]; then
         rpi* \
         libqt5core5a \
     "
+    sudo cp /usr/bin/qemu-arm-static sysroot/usr/bin
     sudo chroot sysroot qemu-arm-static /bin/bash -c "$REMOVE_DEPS_CMD && $INSTALL_DEPS_CMD && apt-get autoremove -y"
+    sudo chroot sysroot qemu-arm-static /bin/bash -c "apt list --installed && symlinks -cr /usr/include && symlinks -cr /usr/lib"
 
     echo "Copying files from sysroot to $SYSROOT..."
     rm -rf $SYSROOT
     mkdir -p $SYSROOT/usr/lib
-    sudo chroot sysroot qemu-arm-static /bin/bash -c "apt list --installed && symlinks -cr /usr/include && symlinks -cr /usr/lib"
     cp -r sysroot/lib $SYSROOT/lib
     cp -r sysroot/usr/include $SYSROOT/usr/include
     cp -r sysroot/usr/lib/ld-linux-armhf.so.3 $SYSROOT/usr/lib/
@@ -184,10 +184,13 @@ else
 
     echo "Extracting sysroot folders to $SYSROOT"
     rm -rf $SYSROOT
-    mkdir -p $SYSROOT/usr
+    mkdir -p $SYSROOT/usr/lib
     docker cp $CONTAINER_NAME:/lib $SYSROOT/lib
-    docker cp $CONTAINER_NAME:/usr/lib $SYSROOT/usr/lib
     docker cp $CONTAINER_NAME:/usr/include $SYSROOT/usr/include
+    docker cp $CONTAINER_NAME:/usr/lib/ld-linux-armhf.so.3 $SYSROOT/usr/lib/
+    docker cp $CONTAINER_NAME:/usr/lib/os-release $SYSROOT/usr/lib/
+    docker cp $CONTAINER_NAME:/usr/lib/arm-linux-gnueabihf $SYSROOT/usr/lib/
+    docker cp $CONTAINER_NAME:/usr/lib/gcc $SYSROOT/usr/lib/
 
     # Find broken links, re-copy
     cd $SYSROOT
