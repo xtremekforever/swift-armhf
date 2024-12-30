@@ -16,7 +16,7 @@ jobs:
           - swift-target-arch: "armv6"
             distribution: "raspios-bookworm"
     env:
-      SWIFT_VERSION: 6.0.3
+      SWIFT_VERSION: "6.0.3"
       SWIFT_TAG: swift-6.0.3-RELEASE
     name: Build Swift
     runs-on: ubuntu-latest
@@ -29,9 +29,7 @@ jobs:
         swift-workspace-cache: swift-workspace
     - name: Generate Builder Container
       shell: bash
-      run: |
-        source ./swift-builder/swift-builder-common
-        ./swift-builder/build-container.sh
+      run: ./swift-builder/build-container.sh
     - uses: ./.github/actions/build-for-distribution
       name: Build & Publish Swift ${{ env.SWIFT_VERSION }}
       with:

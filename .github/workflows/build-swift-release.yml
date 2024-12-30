@@ -5,7 +5,7 @@ on:
     branches: [ "release/6.0.3" ]
 
 env:
-  SWIFT_VERSION: 6.0.3
+  SWIFT_VERSION: "6.0.3"
   SWIFT_TAG: swift-6.0.3-RELEASE
   SWIFT_WORKSPACE_CACHE: swift-workspace
 
@@ -38,9 +38,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Generate Builder Container
       shell: bash
-      run: |
-        source ./swift-builder/swift-builder-common
-        ./swift-builder/build-container.sh
+      run: ./swift-builder/build-container.sh
     - uses: ./.github/actions/build-for-distribution
       name: "Build & Publish Swift ${{ env.SWIFT_VERSION }}"
       with:
