@@ -184,13 +184,10 @@ else
 
     echo "Extracting sysroot folders to $SYSROOT"
     rm -rf $SYSROOT
-    mkdir -p $SYSROOT/usr/lib
+    mkdir -p $SYSROOT/usr
     docker cp $CONTAINER_NAME:/lib $SYSROOT/lib
     docker cp $CONTAINER_NAME:/usr/include $SYSROOT/usr/include
-    docker cp $CONTAINER_NAME:/usr/lib/ld-linux-armhf.so.3 $SYSROOT/usr/lib/
-    docker cp $CONTAINER_NAME:/usr/lib/os-release $SYSROOT/usr/lib/
-    docker cp $CONTAINER_NAME:/usr/lib/arm-linux-gnueabihf $SYSROOT/usr/lib/
-    docker cp $CONTAINER_NAME:/usr/lib/gcc $SYSROOT/usr/lib/
+    docker cp $CONTAINER_NAME:/usr/lib $SYSROOT/usr/lib
 
     # Find broken links, re-copy
     cd $SYSROOT
