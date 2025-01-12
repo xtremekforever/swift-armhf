@@ -49,8 +49,9 @@ echo "Install Foundation"
 (cd $FOUNDATION_BUILDDIR && ninja install)
 
 echo "Fix-up archs"
-find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftmodule" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftmodule \;
-find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "x86_64*.swiftdoc" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftdoc \;
+HOST_ARCH=$(uname -m)
+find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "${HOST_ARCH}*.swiftmodule" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftmodule \;
+find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "${HOST_ARCH}*.swiftdoc" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftdoc \;
 
 # Restore Dispatch headers
 cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
