@@ -33,5 +33,5 @@ echo "Install Dispatch"
 (cd $LIBDISPATCH_BUILDDIR && ninja install)
 
 echo "Install Dispatch to sysroot"
-mv ${LIBDISPATCH_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)"/ ${LIBDISPATCH_INSTALL_PREFIX}/lib/swift/linux/armv7/
+mv ${LIBDISPATCH_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)"/ ${LIBDISPATCH_INSTALL_PREFIX}/lib/swift/linux/${SWIFT_TARGET_ARCH}/
 cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

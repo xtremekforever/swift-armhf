@@ -41,5 +41,5 @@ echo "Install XCTest"
 cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
 
 echo "Install XCTest to sysroot"
-mv ${XCTEST_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)" ${XCTEST_INSTALL_PREFIX}/lib/swift/linux/armv7
+mv ${XCTEST_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)" ${XCTEST_INSTALL_PREFIX}/lib/swift/linux/${SWIFT_TARGET_ARCH}
 cp -rf ${XCTEST_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

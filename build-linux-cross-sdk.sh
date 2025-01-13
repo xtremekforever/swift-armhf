@@ -4,8 +4,8 @@ set -e
 
 SRC_ROOT=$(pwd)
 ARTIFACTS_DIR=$SRC_ROOT/artifacts
-TARGET_TRIPLE=armv7-unknown-linux-gnueabihf
-TARGET_ARCH=armv7
+TARGET_ARCH=${TARGET_ARCH:=armv7}
+TARGET_TRIPLE=${TARGET_ARCH}-unknown-linux-gnueabihf
 
 function print_usage() {
     echo "$0 <swift-tag> <distribution>"

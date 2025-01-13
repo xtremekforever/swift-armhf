@@ -16,12 +16,10 @@ runs:
     with:
       key: ${{ inputs.swift-workspace-cache }}
       path: downloads
-  - if: ${{ steps.restore-workspace.outputs.cache-hit != 'true' }}
-    name: Checkout Sources
+  - name: Checkout Sources
     shell: bash
     run: SWIFT_VERSION=${{ inputs.swift-tag }} ./fetch-sources.sh
-  - if: ${{ steps.restore-workspace.outputs.cache-hit != 'true' }}
-    uses: actions/cache/save@v4
+  - uses: actions/cache/save@v4
     with:
       key: ${{ inputs.swift-workspace-cache }}
       path: downloads

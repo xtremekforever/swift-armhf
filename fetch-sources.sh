@@ -7,6 +7,9 @@ mkdir -p ./downloads
 # Fetch sources
 cd ./downloads
 if [[ -d "$SWIFT_SRCDIR" ]]; then
+    cd swift-corelibs-foundation
+    git stash
+
     echo "$SWIFT_SRCDIR exists"
     cd $SWIFT_SRCDIR
     git stash
@@ -67,6 +70,5 @@ patch -d . -p1 <$SRC_ROOT/patches/0001-Swift-fix-find-libstdc++-for-cxx-interop.
 if [[ $SWIFT_VERSION == *"5.9"* ]]; then
     echo "Apply Foundation strlcpy/strlcat patch for Swift 5.9"
     cd ../swift-corelibs-foundation
-    git stash
     patch -d . -p1 <$SRC_ROOT/patches/0002-Foundation-5.9-check-for-strlcpy-strlcat.patch
 fi

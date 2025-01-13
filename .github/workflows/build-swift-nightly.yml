@@ -36,12 +36,11 @@ jobs:
         swift-workspace-cache: ${{ env.SWIFT_WORKSPACE_CACHE }}
     - name: Build Swift Nightly Container
       shell: bash
-      run: |
-        source ./swift-builder/swift-builder-common
-        ./swift-builder/build-container.sh
+      run: ./swift-builder/build-container.sh
     - uses: ./.github/actions/build-for-distribution
       name: Build & Publish Swift
       with:
         swift-tag: ${{ env.SWIFT_TAG }}
+        swift-target-arch: armv7
         distribution: ${{ env.DISTRIBUTION }}
         builder-tag: ${{ env.SWIFT_VERSION }}
