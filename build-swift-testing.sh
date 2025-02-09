@@ -19,6 +19,7 @@ LIBS="-latomic" cmake -S $SWIFT_TESTING_SRCDIR -B $SWIFT_TESTING_BUILDDIR -G Nin
         -DCMAKE_CXX_FLAGS="${RUNTIME_FLAGS}" \
         -DCMAKE_C_LINK_FLAGS="${LINK_FLAGS}" \
         -DCMAKE_CXX_LINK_FLAGS="${LINK_FLAGS}" \
+        -DCMAKE_TOOLCHAIN_FILE="${CROSS_TOOLCHAIN_FILE}" \
         -DCF_DEPLOYMENT_SWIFT=ON \
         -DCMAKE_Swift_COMPILER=${SWIFT_NATIVE_PATH}/swiftc \
         -DCMAKE_Swift_FLAGS="${SWIFTC_FLAGS}" \
@@ -32,11 +33,6 @@ echo "Build swift-testing"
 
 echo "Install swift-testing"
 (cd $SWIFT_TESTING_BUILDDIR && ninja install)
-
-echo "Fix-up archs"
-HOST_ARCH=$(uname -m)
-find ${SWIFT_TESTING_INSTALL_PREFIX}/lib/swift/linux -name "${HOST_ARCH}*.swiftmodule" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftmodule \;
-find ${SWIFT_TESTING_INSTALL_PREFIX}/lib/swift/linux -name "${HOST_ARCH}*.swiftdoc" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftdoc \;
 
 echo "Install swift-testing to sysroot"
 cp -rf ${SWIFT_TESTING_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

@@ -22,6 +22,7 @@ LIBS="-latomic" cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
         -DCMAKE_CXX_FLAGS="${RUNTIME_FLAGS}" \
         -DCMAKE_C_LINK_FLAGS="${LINK_FLAGS}" \
         -DCMAKE_CXX_LINK_FLAGS="${LINK_FLAGS}" \
+        -DCMAKE_TOOLCHAIN_FILE="${CROSS_TOOLCHAIN_FILE}" \
         -DCF_DEPLOYMENT_SWIFT=ON \
         -Ddispatch_DIR="${LIBDISPATCH_BUILDDIR}/cmake/modules" \
         -DFoundation_DIR="${FOUNDATION_BUILDDIR}/cmake/modules" \
@@ -41,5 +42,4 @@ echo "Install XCTest"
 cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
 
 echo "Install XCTest to sysroot"
-mv ${XCTEST_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)" ${XCTEST_INSTALL_PREFIX}/lib/swift/linux/${SWIFT_TARGET_ARCH}
 cp -rf ${XCTEST_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

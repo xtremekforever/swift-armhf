@@ -20,6 +20,7 @@ LIBS="-latomic" cmake -S $LIBDISPATCH_SRCDIR -B $LIBDISPATCH_BUILDDIR -G Ninja \
         -DCMAKE_CXX_FLAGS="${RUNTIME_FLAGS}" \
         -DCMAKE_C_LINK_FLAGS="${LINK_FLAGS}" \
         -DCMAKE_CXX_LINK_FLAGS="${LINK_FLAGS}" \
+        -DCMAKE_TOOLCHAIN_FILE="${CROSS_TOOLCHAIN_FILE}" \
         -DENABLE_SWIFT=YES \
         -DCMAKE_Swift_FLAGS="${SWIFTC_FLAGS}" \
         -DCMAKE_Swift_FLAGS_DEBUG="" \
@@ -33,5 +34,4 @@ echo "Install Dispatch"
 (cd $LIBDISPATCH_BUILDDIR && ninja install)
 
 echo "Install Dispatch to sysroot"
-mv ${LIBDISPATCH_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)"/ ${LIBDISPATCH_INSTALL_PREFIX}/lib/swift/linux/${SWIFT_TARGET_ARCH}/
 cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
