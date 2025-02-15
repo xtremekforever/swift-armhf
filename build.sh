@@ -26,6 +26,9 @@ rm -rf $STAGING_DIR/usr/lib/swift*
 # Build LLVM
 ./build-llvm.sh
 
+# This is required for cross-compiling dispatch, foundation, etc
+./create-cmake-toolchain.sh
+
 # Build Swift
 ./build-swift-stdlib.sh
 ./build-dispatch.sh

@@ -24,6 +24,7 @@ LIBS="-latomic" cmake -S $FOUNDATION_SRCDIR -B $FOUNDATION_BUILDDIR -G Ninja \
         -DCMAKE_C_LINK_FLAGS="${LINK_FLAGS}" \
         -DCMAKE_CXX_LINK_FLAGS="${LINK_FLAGS}" \
         -DCMAKE_ASM_FLAGS="${ASM_FLAGS}" \
+        -DCMAKE_TOOLCHAIN_FILE="${CROSS_TOOLCHAIN_FILE}" \
         -DCF_DEPLOYMENT_SWIFT=ON \
         -Ddispatch_DIR="${LIBDISPATCH_BUILDDIR}/cmake/modules" \
         -DLIBXML2_LIBRARY=${STAGING_DIR}/usr/lib/arm-linux-gnueabihf/libxml2.so \
@@ -48,17 +49,8 @@ echo "Build Foundation"
 echo "Install Foundation"
 (cd $FOUNDATION_BUILDDIR && ninja install)
 
-echo "Fix-up archs"
-HOST_ARCH=$(uname -m)
-find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "${HOST_ARCH}*.swiftmodule" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftmodule \;
-find ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux -name "${HOST_ARCH}*.swiftdoc" -execdir mv {} ${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf.swiftdoc \;
-
 # Restore Dispatch headers
 cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
 
 echo "Install Foundation into sysroot"
-FOUNDATION_MODULES_DIR=${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)"
-if [ -d $FOUNDATION_MODULES_DIR ]; then
-    mv ${FOUNDATION_MODULES_DIR} ${FOUNDATION_INSTALL_PREFIX}/lib/swift/linux/${SWIFT_TARGET_ARCH}
-fi
 cp -rf ${FOUNDATION_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
