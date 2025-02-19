@@ -11,6 +11,7 @@ env:
 jobs:
   nightly:
     strategy:
+      fail-fast: false
       matrix:
         branch: ["swift-6.1-branch", "development"]
     env:
