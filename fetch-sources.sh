@@ -35,6 +35,7 @@ fi
     --skip-repository swift-async-algorithms \
     --skip-repository swift-atomics \
     --skip-repository swift-argument-parser \
+    --skip-repository swift-build \
     --skip-repository swift-certificates \
     --skip-repository swift-crypto \
     --skip-repository swift-docc \
