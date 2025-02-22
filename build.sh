@@ -40,6 +40,8 @@ if [[ $SWIFT_VERSION == *"swift-6."* ]] || [[ $SWIFT_VERSION == *"swift-DEVELOPM
     ./build-swift-testing.sh
 fi
 
+./deploy-to-sysroot.sh
+
 # Archive
 ./build-tar.sh
 

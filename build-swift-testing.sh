@@ -2,7 +2,7 @@
 set -e
 source swift-define
 
-echo "Create swift-testing build folder ${SWIFT_TESTING_BUILDDIR}"
+echo "Create Testing build folder ${SWIFT_TESTING_BUILDDIR}"
 mkdir -p $SWIFT_TESTING_BUILDDIR
 rm -rf $SWIFT_TESTING_INSTALL_PREFIX
 mkdir -p $SWIFT_TESTING_INSTALL_PREFIX
@@ -12,7 +12,7 @@ if [[ $SWIFT_VERSION == *"swift-6.1"* ]]; then
     SWIFTC_FLAGS="${SWIFTC_FLAGS} -D SWT_NO_EXIT_TESTS"
 fi
 
-echo "Configure swift-testing"
+echo "Configure Testing"
 rm -rf $SWIFT_TESTING_BUILDDIR/CMakeCache.txt
 LIBS="-latomic" cmake -S $SWIFT_TESTING_SRCDIR -B $SWIFT_TESTING_BUILDDIR -G Ninja \
     -DCMAKE_INSTALL_PREFIX=${SWIFT_TESTING_INSTALL_PREFIX} \
@@ -31,13 +31,12 @@ LIBS="-latomic" cmake -S $SWIFT_TESTING_SRCDIR -B $SWIFT_TESTING_BUILDDIR -G Nin
     -DCMAKE_Swift_FLAGS_DEBUG="" \
     -DCMAKE_Swift_FLAGS_RELEASE="" \
     -DCMAKE_Swift_FLAGS_RELWITHDEBINFO="" \
+    -Ddispatch_DIR="${LIBDISPATCH_BUILDDIR}/cmake/modules" \
+    -DFoundation_DIR="${FOUNDATION_BUILDDIR}/cmake/modules" \
     -DSwiftTesting_MACRO="${SWIFT_NATIVE_PATH}/../lib/swift/host/plugins/libTestingMacros.so" \
 
-echo "Build swift-testing"
+echo "Build Testing"
 (cd $SWIFT_TESTING_BUILDDIR && ninja)
 
-echo "Install swift-testing"
+echo "Install Testing"
 (cd $SWIFT_TESTING_BUILDDIR && ninja install)
-
-echo "Install Testing to sysroot"
-cp -rf ${SWIFT_TESTING_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

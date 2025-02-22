@@ -7,9 +7,6 @@ mkdir -p $FOUNDATION_BUILDDIR
 rm -rf $FOUNDATION_INSTALL_PREFIX
 mkdir -p $FOUNDATION_INSTALL_PREFIX
 
-# Workaround Dispatch defined with cmake and module
-rm -rf ${STAGING_DIR}/usr/lib/swift/dispatch
-
 echo "Configure Foundation"
 rm -rf $FOUNDATION_BUILDDIR/CMakeCache.txt
 LIBS="-latomic" cmake -S $FOUNDATION_SRCDIR -B $FOUNDATION_BUILDDIR -G Ninja \
@@ -48,9 +45,3 @@ echo "Build Foundation"
 
 echo "Install Foundation"
 (cd $FOUNDATION_BUILDDIR && ninja install)
-
-# Restore Dispatch headers
-cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
-
-echo "Install Foundation into sysroot"
-cp -rf ${FOUNDATION_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

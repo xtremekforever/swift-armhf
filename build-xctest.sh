@@ -7,9 +7,6 @@ mkdir -p $XCTEST_BUILDDIR
 rm -rf $XCTEST_INSTALL_PREFIX
 mkdir -p $XCTEST_INSTALL_PREFIX
 
-# Workaround Dispatch defined with cmake and module
-rm -rf ${STAGING_DIR}/usr/lib/swift/dispatch
-
 echo "Configure XCTest"
 rm -rf $XCTEST_BUILDDIR/CMakeCache.txt
 LIBS="-latomic" cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
@@ -37,9 +34,3 @@ echo "Build XCTest"
 
 echo "Install XCTest"
 (cd $XCTEST_BUILDDIR && ninja install)
-
-# Restore Dispatch headers
-cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
-
-echo "Install XCTest to sysroot"
-cp -rf ${XCTEST_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

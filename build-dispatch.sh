@@ -33,5 +33,3 @@ echo "Build Dispatch"
 echo "Install Dispatch"
 (cd $LIBDISPATCH_BUILDDIR && ninja install)
 
-echo "Install Dispatch to sysroot"
-cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
