@@ -35,8 +35,8 @@ rm -rf $STAGING_DIR/usr/lib/swift*
 ./build-foundation.sh
 ./build-xctest.sh
 
-# NOTE: Swift-testing is disabled in 6.1 since it fails to compile
-if [[ $SWIFT_VERSION == *"6.0"* ]] || [[ $SWIFT_VERSION == *"swift-DEVELOPMENT"* ]]; then
+# Enable Swift Testing for 6.0 and later
+if [[ $SWIFT_VERSION == *"swift-6."* ]] || [[ $SWIFT_VERSION == *"swift-DEVELOPMENT"* ]]; then
     ./build-swift-testing.sh
 fi
 
