@@ -1,0 +1,59 @@
+From 2dd33c1200664fef2dc034966323307c8057f7cb Mon Sep 17 00:00:00 2001
+From: "Jesse L. Zamora" <xtremekforever@gmail.com>
+Date: Tue, 25 Feb 2025 17:54:51 -0500
+Subject: [PATCH] Add fixes to correct backtracing compilation for armv7
+
+---
+ stdlib/public/Backtracing/Context.swift     | 7 ++++---
+ stdlib/public/runtime/CrashHandlerLinux.cpp | 2 +-
+ stdlib/public/runtime/Float16Support.cpp    | 2 +-
+ 3 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/stdlib/public/Backtracing/Context.swift b/stdlib/public/Backtracing/Context.swift
+index bfb015e6d96..92e36d13e27 100644
+--- a/stdlib/public/Backtracing/Context.swift
++++ b/stdlib/public/Backtracing/Context.swift
+@@ -865,10 +865,11 @@ extension arm_gprs {
+ 
+   #if os(Linux) && arch(arm)
+   init(with mctx: mcontext_t) {
++    var mctxCopy = mctx
+     withUnsafeMutablePointer(to: &gprs._r) {
+-      $0.withMemoryRebound(to: UInt32.self, capacity: 16) {
+-        withUnsafePointer(to: &mctx.arm_r0) {
+-          $0.withMemoryRebound(to: UInt32.self, capacity: 16) {
++      $0.withMemoryRebound(to: UInt32.self, capacity: 16) { to in
++        withUnsafePointer(to: &mctxCopy.arm_r0) {
++          $0.withMemoryRebound(to: UInt32.self, capacity: 16) { from in
+             for n in 0..<16 {
+               to[n] = from[n]
+             }
+diff --git a/stdlib/public/runtime/CrashHandlerLinux.cpp b/stdlib/public/runtime/CrashHandlerLinux.cpp
+index 1c188374bc5..7baeb365c77 100644
+--- a/stdlib/public/runtime/CrashHandlerLinux.cpp
++++ b/stdlib/public/runtime/CrashHandlerLinux.cpp
+@@ -251,7 +251,7 @@ handle_fatal_signal(int signum,
+ #elif defined(__arm64__) || defined(__aarch64__)
+   pc = (void *)(ctx->uc_mcontext.pc);
+ #elif defined(__arm__)
+-#if defined(__ANDROID__)
++#if defined(__ANDROID__) || defined(__linux__)
+   pc = (void *)(ctx->uc_mcontext.arm_pc);
+ #else
+   pc = (void *)(ctx->uc_mcontext.gprs[15]);
+diff --git a/stdlib/public/runtime/Float16Support.cpp b/stdlib/public/runtime/Float16Support.cpp
+index fa259559e45..0c887272164 100644
+--- a/stdlib/public/runtime/Float16Support.cpp
++++ b/stdlib/public/runtime/Float16Support.cpp
+@@ -31,7 +31,7 @@
+ // Android NDK <r21 do not provide `__aeabi_d2h` in the compiler runtime,
+ // provide shims in that case.
+ #if (defined(__ANDROID__) && defined(__ARM_ARCH_7A__) && defined(__ARM_EABI__)) || \
+-  ((defined(__i386__) || defined(__i686__) || defined(__x86_64__)) && !defined(__APPLE__))
++  ((defined(__i386__) || defined(__i686__) || defined(__x86_64__) || defined(__arm__)) && !defined(__APPLE__))
+ 
+ #include "swift/shims/Visibility.h"
+ 
+-- 
+2.43.0
+

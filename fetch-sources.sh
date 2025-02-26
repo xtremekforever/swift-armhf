@@ -64,8 +64,9 @@ fi
     --skip-repository zlib \
 
 # Apply patches
-echo "Apply CXX interop patch"
+echo "Apply Swift patches"
 patch -d . -p1 <$SRC_ROOT/patches/0001-Swift-fix-find-libstdc++-for-cxx-interop.patch
+patch -d . -p1 <$SRC_ROOT/patches/0003-Add-fixes-to-correct-backtracing-compilation-for-arm.patch
 
 # Only applies to Swift 5.9
 if [[ $SWIFT_VERSION == *"5.9"* ]]; then
