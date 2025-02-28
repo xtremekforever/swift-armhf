@@ -32,7 +32,9 @@ rm -rf $STAGING_DIR/usr/lib/swift*
 # Build Swift
 ./build-swift-stdlib.sh
 ./build-dispatch.sh
+STATIC_BUILD=1 ./build-dispatch.sh
 ./build-foundation.sh
+STATIC_BUILD=1 ./build-foundation.sh
 ./build-xctest.sh
 
 # Enable Swift Testing for 6.0 and later
