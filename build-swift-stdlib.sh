@@ -8,7 +8,7 @@ mkdir -p $SWIFT_INSTALL_PREFIX
 
 echo "Configure Swift"
 rm -rf $SWIFT_BUILDDIR/CMakeCache.txt
-LIBS="-latomic" cmake -S $SWIFT_SRCDIR -B $SWIFT_BUILDDIR -G Ninja \
+cmake -S $SWIFT_SRCDIR -B $SWIFT_BUILDDIR -G Ninja \
         -DCMAKE_INSTALL_PREFIX=${SWIFT_INSTALL_PREFIX} \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=${SWIFT_BUILD_CONFIGURATION} \

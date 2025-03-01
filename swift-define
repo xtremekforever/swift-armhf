@@ -72,7 +72,7 @@ PREBUILT_XCTOOLCHAIN=$SRC_ROOT/downloads/${SWIFT_VERSION}-osx.pkg
 
 # Compilation flags
 RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-LINK_FLAGS="--sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS} -latomic"
+LINK_FLAGS="--sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
 ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
 
 SWIFTC_FLAGS="-target ${SWIFT_TARGET_NAME} \
