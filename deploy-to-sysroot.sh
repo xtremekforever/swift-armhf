@@ -2,9 +2,6 @@
 set -e
 source swift-define
 
-echo "Install Swift Stdlib to sysroot"
-cp -rf ${SWIFT_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
-
 echo "Install Dispatch to sysroot"
 cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
 

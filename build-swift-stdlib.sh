@@ -69,3 +69,6 @@ echo "Build Swift StdLib"
 
 echo "Install Swift StdLib"
 (cd $SWIFT_BUILDDIR && ninja install)
+
+echo "Install Swift Stdlib to sysroot"
+cp -rf ${SWIFT_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
