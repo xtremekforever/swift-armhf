@@ -17,8 +17,8 @@ jobs:
           - swift-target-arch: "armv6"
             distribution: "raspios-bookworm"
     env:
-      SWIFT_VERSION: "6.0.3"
-      SWIFT_TAG: swift-6.0.3-RELEASE
+      SWIFT_VERSION: "5.9.2"
+      SWIFT_TAG: swift-5.9.2-RELEASE
     name: Build Swift
     runs-on: ubuntu-latest
     steps:
