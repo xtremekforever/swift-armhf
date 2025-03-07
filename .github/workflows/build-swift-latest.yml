@@ -9,6 +9,7 @@ on:
 jobs:
   build-latest:
     strategy:
+      fail-fast: false
       matrix:
         swift-target-arch: ["armv7"]
         distribution: ["debian-bookworm"]

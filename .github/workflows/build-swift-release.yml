@@ -23,6 +23,7 @@ jobs:
 
   build-for-distribution:
     strategy:
+      fail-fast: false
       matrix:
         distribution: [
           "debian-bullseye",
@@ -60,6 +61,7 @@ jobs:
 
   build-for-raspios:
     strategy:
+      fail-fast: false
       matrix:
         distribution-version: [
           "bullseye",
