@@ -5,7 +5,7 @@ to maintain builds of the runtime that can be used for cross-compilation to armv
 
 Some main goals:
 
-- Build major versions of Swift (since 5.9) and provide build artifacts for various distributions that support armv7 (Ubuntu, Debian).
+- Build major versions of Swift (since 5.10) and provide build artifacts for various distributions that support armv7 (Ubuntu, Debian).
 - Provide SDKs that can be downloaded and used to cross-compile user applications and libraries to armv7.
 - Maintain a CI that can build snapshots/nightly versions of Swift to find and fix issues.
 
