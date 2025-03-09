@@ -67,3 +67,9 @@ fi
 echo "Apply CXX interop patch"
 patch -d . -p1 <$SRC_ROOT/patches/0001-Swift-fix-find-libstdc++-for-cxx-interop.patch
 patch -d . -p1 <$SRC_ROOT/patches/0002-Add-arm-to-float16support-for-missing-symbol.patch
+
+if [[ $SWIFT_VERSION == *"5.9"* ]] || [[ $SWIFT_VERSION == *"5.10-"* ]]; then
+    echo "Apply Foundation strlcpy/strlcat patch"
+    cd ../swift-corelibs-foundation
+    patch -d . -p1 <$SRC_ROOT/patches/0002-Foundation-check-for-strlcpy-strlcat.patch
+fi
