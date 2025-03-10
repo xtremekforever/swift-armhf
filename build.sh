@@ -31,11 +31,16 @@ rm -rf $STAGING_DIR/usr/lib/swift*
 
 # Build Swift
 ./build-swift-stdlib.sh
+
+# Build corelibs shared
 ./build-dispatch.sh
-STATIC_BUILD=1 ./build-dispatch.sh
 ./build-foundation.sh
-STATIC_BUILD=1 ./build-foundation.sh
 ./build-xctest.sh
+
+# Build corelibs static
+STATIC_BUILD=1 ./build-dispatch.sh
+STATIC_BUILD=1 ./build-foundation.sh
+STATIC_BUILD=1 ./build-xctest.sh
 
 # Enable Swift Testing for 6.0 and later
 if [[ $SWIFT_VERSION == *"swift-6."* ]] || [[ $SWIFT_VERSION == *"swift-DEVELOPMENT"* ]]; then
@@ -48,5 +53,10 @@ fi
 ./build-tar.sh
 
 # Cross compile test package
+./generate-swiftpm-toolchain.sh
+./build-swift-hello.sh
+
+# Cross compile test package with --static-swift-stdlib
+export STATIC_SWIFT_STDLIB=1 
 ./generate-swiftpm-toolchain.sh
 ./build-swift-hello.sh

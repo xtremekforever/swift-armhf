@@ -70,5 +70,9 @@ echo "Build Swift StdLib"
 echo "Install Swift StdLib"
 (cd $SWIFT_BUILDDIR && ninja install)
 
+# https://github.com/swiftlang/swift/issues/78003
+echo "Fix libswiftCxx installation location..."
+cp -rf ${SWIFT_INSTALL_PREFIX}/lib/swift/linux/libswiftCxx*.a ${SWIFT_INSTALL_PREFIX}/lib/swift_static/linux
+
 echo "Install Swift Stdlib to sysroot"
 cp -rf ${SWIFT_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

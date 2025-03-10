@@ -6,6 +6,7 @@ if [ $STATIC_BUILD ]; then
     FOUNDATION_BUILDDIR=$FOUNDATION_STATIC_BUILDDIR
     FOUNDATION_INSTALL_PREFIX=$FOUNDATION_STATIC_INSTALL_PREFIX
     BUILD_SHARED_LIBS=OFF
+    STATIC="Static"
 else
     BUILD_SHARED_LIBS=ON
 fi
@@ -15,7 +16,7 @@ mkdir -p $FOUNDATION_BUILDDIR
 rm -rf $FOUNDATION_INSTALL_PREFIX
 mkdir -p $FOUNDATION_INSTALL_PREFIX
 
-echo "Configure Foundation BUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
+echo "Configure Foundation ${STATIC}"
 rm -rf $FOUNDATION_BUILDDIR/CMakeCache.txt
 cmake -S $FOUNDATION_SRCDIR -B $FOUNDATION_BUILDDIR -G Ninja \
     -DCMAKE_INSTALL_PREFIX=${FOUNDATION_INSTALL_PREFIX} \
@@ -48,8 +49,8 @@ cmake -S $FOUNDATION_SRCDIR -B $FOUNDATION_BUILDDIR -G Ninja \
     -D_SwiftFoundationICU_SourceDIR="$SRC_ROOT/downloads/swift-foundation-icu" \
     -D_SwiftCollections_SourceDIR="$SRC_ROOT/downloads/swift-collections" \
 
-echo "Build Foundation"
+echo "Build Foundation ${STATIC}"
 (cd $FOUNDATION_BUILDDIR && ninja)
 
-echo "Install Foundation"
+echo "Install Foundation ${STATIC}"
 (cd $FOUNDATION_BUILDDIR && ninja install)

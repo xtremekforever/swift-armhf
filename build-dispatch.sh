@@ -6,6 +6,7 @@ if [ $STATIC_BUILD ]; then
     LIBDISPATCH_BUILDDIR=$LIBDISPATCH_STATIC_BUILDDIR
     LIBDISPATCH_INSTALL_PREFIX=$LIBDISPATCH_STATIC_INSTALL_PREFIX
     BUILD_SHARED_LIBS=OFF
+    STATIC="Static"
 else
     BUILD_SHARED_LIBS=ON
 fi
@@ -15,7 +16,7 @@ mkdir -p $LIBDISPATCH_BUILDDIR
 rm -rf $LIBDISPATCH_INSTALL_PREFIX
 mkdir -p $LIBDISPATCH_INSTALL_PREFIX
 
-echo "Configure Dispatch"
+echo "Configure Dispatch ${STATIC}"
 rm -rf $LIBDISPATCH_BUILDDIR/CMakeCache.txt
 cmake -S $LIBDISPATCH_SRCDIR -B $LIBDISPATCH_BUILDDIR -G Ninja \
         -DCMAKE_INSTALL_PREFIX=${LIBDISPATCH_INSTALL_PREFIX} \
@@ -35,9 +36,9 @@ cmake -S $LIBDISPATCH_SRCDIR -B $LIBDISPATCH_BUILDDIR -G Ninja \
         -DCMAKE_Swift_FLAGS_RELEASE="" \
         -DCMAKE_Swift_FLAGS_RELWITHDEBINFO="" \
 
-echo "Build Dispatch"
+echo "Build Dispatch ${STATIC}"
 (cd $LIBDISPATCH_BUILDDIR && ninja)
 
-echo "Install Dispatch"
+echo "Install Dispatch ${STATIC}"
 (cd $LIBDISPATCH_BUILDDIR && ninja install)
 

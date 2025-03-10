@@ -2,16 +2,25 @@
 set -e
 source swift-define
 
+if [ $STATIC_BUILD ]; then
+    XCTEST_BUILDDIR=$XCTEST_STATIC_BUILDDIR
+    XCTEST_INSTALL_PREFIX=$XCTEST_STATIC_INSTALL_PREFIX
+    BUILD_SHARED_LIBS=OFF
+    STATIC="Static"
+else
+    BUILD_SHARED_LIBS=ON
+fi
+
 echo "Create XCTest build folder ${XCTEST_BUILDDIR}"
 mkdir -p $XCTEST_BUILDDIR
 rm -rf $XCTEST_INSTALL_PREFIX
 mkdir -p $XCTEST_INSTALL_PREFIX
 
-echo "Configure XCTest"
+echo "Configure XCTest ${STATIC}"
 rm -rf $XCTEST_BUILDDIR/CMakeCache.txt
 cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
         -DCMAKE_INSTALL_PREFIX=${XCTEST_INSTALL_PREFIX} \
-        -DBUILD_SHARED_LIBS=ON \
+        -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} \
         -DCMAKE_BUILD_TYPE=${SWIFT_BUILD_CONFIGURATION} \
         -DCMAKE_C_COMPILER=${SWIFT_NATIVE_PATH}/clang \
         -DCMAKE_CXX_COMPILER=${SWIFT_NATIVE_PATH}/clang++ \
@@ -29,8 +38,8 @@ cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
         -DCMAKE_Swift_FLAGS_RELEASE="" \
         -DCMAKE_Swift_FLAGS_RELWITHDEBINFO="" \
 
-echo "Build XCTest"
+echo "Build XCTest ${STATIC}"
 (cd $XCTEST_BUILDDIR && ninja)
 
-echo "Install XCTest"
+echo "Install XCTest ${STATIC}"
 (cd $XCTEST_BUILDDIR && ninja install)
