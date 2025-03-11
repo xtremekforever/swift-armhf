@@ -71,6 +71,20 @@ runs:
           --destination /opt/${{ env.SDK_NAME }}/${{ inputs.distribution }}.json \
           -Xswiftc -cxx-interoperability-mode=default \
           -Xswiftc -enable-testing
+      cp ${{ github.workspace }}/swift-hello/.build/release/swift-hello ${{ github.workspace }}/swift-hello
+  - name: Test Static SDK for Linux
+    shell: bash
+    env:
+      SDK_NAME: ${{ inputs.swift-tag }}-${{ inputs.distribution }}-${{ inputs.swift-target-arch }}
+    run: |
+      docker run --rm --user runner --workdir ${{ github.workspace }} -v $HOME:$HOME -v ${{ github.workspace }}/artifacts:/opt \
+        xtremekforever/swift-builder:${{ inputs.builder-tag }} \
+        swift build -c release \
+          --package-path swift-hello \
+          --destination /opt/${{ env.SDK_NAME }}/${{ inputs.distribution }}-static.json \
+          -Xswiftc -cxx-interoperability-mode=default \
+          --static-swift-stdlib
+      cp ${{ github.workspace }}/swift-hello/.build/release/swift-hello ${{ github.workspace }}/swift-hello-static
   - uses: actions/upload-artifact@v4
     name: Publish
     with:
@@ -79,3 +93,4 @@ runs:
         ${{ inputs.sysroot-name }}.tar.gz
         ${{ inputs.swift-tag }}*-${{ inputs.swift-target-arch }}-install.tar.gz
         ${{ inputs.swift-tag }}*-${{ inputs.swift-target-arch }}-sdk.tar.gz
+        swift-hello*
