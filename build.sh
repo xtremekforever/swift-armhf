@@ -40,7 +40,7 @@ rm -rf $STAGING_DIR/usr/lib/swift*
 # Build corelibs static
 STATIC_BUILD=1 ./build-dispatch.sh
 STATIC_BUILD=1 ./build-foundation.sh
-STATIC_BUILD=1 ./build-xctest.sh
+# We don't do XCTest and Testing because the official Swift distributions
 
 # Enable Swift Testing for 6.0 and later
 if [[ $SWIFT_VERSION == *"swift-6."* ]] || [[ $SWIFT_VERSION == *"swift-DEVELOPMENT"* ]]; then
