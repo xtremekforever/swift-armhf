@@ -61,31 +61,20 @@ cat <<EOT > $TARGET_SDK_DIR/SDKSettings.json
 EOT
 
 # Create destination.json file
-echo "Creating destination.json file for SDK..."
+echo "Creating $DISTRIBUTION.json file for SDK..."
 SDK_INSTALL_DIR="$SDK_INSTALL_PREFIX/$SDK_NAME/$DISTRIBUTION"
-cat <<EOT > $SDK_DIR/$DISTRIBUTION.json
-{
-    "version":1,
-    "sdk":"$SDK_INSTALL_DIR",
-    "toolchain-bin-dir":"/usr/bin",
-    "target":"$TARGET_TRIPLE",
-    "dynamic-library-extension":"so",
-    "extra-cc-flags":[
-       "-fPIC"
-    ],
-    "extra-swiftc-flags":[
-       "-target", "$TARGET_TRIPLE",
-       "-use-ld=lld",
-       "-Xlinker", "-rpath", "-Xlinker", "/usr/lib/swift/linux",
-       "-Xlinker", "-rpath", "-Xlinker", "/usr/lib/swift/linux/armv7",
-       "-resource-dir", "$SDK_INSTALL_DIR/usr/lib/swift",
-       "-sdk", "$SDK_INSTALL_DIR",
-       "-Xcc", "--gcc-toolchain=$SDK_INSTALL_DIR/usr"
-    ],
-    "extra-cpp-flags":[
-    ]
-}
-EOT
+STAGING_DIR=$SDK_INSTALL_DIR \
+SWIFT_TARGET_ARCH=$TARGET_ARCH \
+SWIFTPM_DESTINATION_FILE=$SDK_DIR/$DISTRIBUTION.json \
+    ./generate-swiftpm-toolchain.sh
+
+echo "Creating $DISTRIBUTION-static.json file for SDK..."
+SDK_INSTALL_DIR="$SDK_INSTALL_PREFIX/$SDK_NAME/$DISTRIBUTION"
+STAGING_DIR=$SDK_INSTALL_DIR \
+SWIFT_TARGET_ARCH=$TARGET_ARCH \
+STATIC_SWIFT_STDLIB=1 \
+SWIFTPM_DESTINATION_FILE=$SDK_DIR/$DISTRIBUTION-static.json \
+    ./generate-swiftpm-toolchain.sh
 
 # Create README.md with instructions on usage
 echo "Creating README.md with instructions for usage..."
@@ -98,18 +87,23 @@ an absolute path for them to work. This SDK is built to be installed at /opt lik
 
  - /opt/$SDK_NAME
 
-If you desire to install it to a different location, simply edit the $DISTRIBUTION.json file in this
-directory to change all the "/opt" paths to your new location.
+If you desire to install it to a different location, simply edit the $DISTRIBUTION.json or 
+$DISTRIBUTION-static.json file in this directory to change all the "/opt" paths to your new location.
 
 The SDK also assumes that your host Swift toolchain is installed at /usr/bin, but this can also be
-changed in the $DISTRIBUTION.json file. PLEASE NOTE: You *MUST* use the exact same version of the
-host Swift toolchain ($SWIFT_TAG) for this SDK to work. If you have a version mismatch you will be
-unable to cross-compile using this SDK. You have been warned!
+changed in the $DISTRIBUTION.json/$DISTRIBUTION-static.json files. PLEASE NOTE: You *MUST* use the
+exact same version of the host Swift toolchain ($SWIFT_TAG) for this SDK to work. If you have a
+version mismatch you will be unable to cross-compile using this SDK. You have been warned!
 
 To use the SDK, simply provide the "--destination" param on the command line when building a Swift
 app:
 
 > swift build --destination /opt/$SDK_NAME/$DISTRIBUTION.json
+
+Or, to compile a binary with the static Swift stdlib included, use the $DISTRIBUTION-static.json
+file instead, like this:
+
+> swift build --destination /opt/$SDK_NAME/$DISTRIBUTION-static.json --static-swift-stdlib
 
 Of course, if you have installed the SDK to a different path, use that path instead.
 EOT

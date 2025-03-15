@@ -2,17 +2,26 @@
 set -e
 source swift-define
 
+if [ $STATIC_BUILD ]; then
+    LIBDISPATCH_BUILDDIR=$LIBDISPATCH_STATIC_BUILDDIR
+    LIBDISPATCH_INSTALL_PREFIX=$LIBDISPATCH_STATIC_INSTALL_PREFIX
+    BUILD_SHARED_LIBS=OFF
+    STATIC="Static"
+else
+    BUILD_SHARED_LIBS=ON
+fi
+
 echo "Create Dispatch build folder ${SWIFT_BUILDDIR}"
 mkdir -p $LIBDISPATCH_BUILDDIR
 rm -rf $LIBDISPATCH_INSTALL_PREFIX
 mkdir -p $LIBDISPATCH_INSTALL_PREFIX
 
-echo "Configure Dispatch"
+echo "Configure Dispatch ${STATIC}"
 rm -rf $LIBDISPATCH_BUILDDIR/CMakeCache.txt
-LIBS="-latomic" cmake -S $LIBDISPATCH_SRCDIR -B $LIBDISPATCH_BUILDDIR -G Ninja \
+cmake -S $LIBDISPATCH_SRCDIR -B $LIBDISPATCH_BUILDDIR -G Ninja \
         -DCMAKE_INSTALL_PREFIX=${LIBDISPATCH_INSTALL_PREFIX} \
         -DBUILD_TESTING=OFF \
-        -DBUILD_SHARED_LIBS=ON \
+        -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} \
         -DCMAKE_BUILD_TYPE=${SWIFT_BUILD_CONFIGURATION} \
         -DCMAKE_C_COMPILER=${SWIFT_NATIVE_PATH}/clang \
         -DCMAKE_CXX_COMPILER=${SWIFT_NATIVE_PATH}/clang++ \
@@ -27,9 +36,9 @@ LIBS="-latomic" cmake -S $LIBDISPATCH_SRCDIR -B $LIBDISPATCH_BUILDDIR -G Ninja \
         -DCMAKE_Swift_FLAGS_RELEASE="" \
         -DCMAKE_Swift_FLAGS_RELWITHDEBINFO="" \
 
-echo "Build Dispatch"
+echo "Build Dispatch ${STATIC}"
 (cd $LIBDISPATCH_BUILDDIR && ninja)
 
-echo "Install Dispatch"
+echo "Install Dispatch ${STATIC}"
 (cd $LIBDISPATCH_BUILDDIR && ninja install)
 
