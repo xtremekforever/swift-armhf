@@ -7,11 +7,6 @@ mkdir -p $SWIFT_TESTING_BUILDDIR
 rm -rf $SWIFT_TESTING_INSTALL_PREFIX
 mkdir -p $SWIFT_TESTING_INSTALL_PREFIX
 
-# TODO: Remove this workaround once exit testing builds in 6.1 for armv7
-if [[ $SWIFT_VERSION == *"swift-6.1"* ]]; then
-    SWIFTC_FLAGS="${SWIFTC_FLAGS} -D SWT_NO_EXIT_TESTS"
-fi
-
 echo "Configure Testing"
 rm -rf $SWIFT_TESTING_BUILDDIR/CMakeCache.txt
 cmake -S $SWIFT_TESTING_SRCDIR -B $SWIFT_TESTING_BUILDDIR -G Ninja \
