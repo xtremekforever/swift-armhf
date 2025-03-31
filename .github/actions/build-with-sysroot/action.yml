@@ -50,8 +50,7 @@ runs:
         -e INSTALL_TAR=$(pwd)/${{ inputs.swift-tag }}-${{ inputs.distribution }}-${{ inputs.swift-target-arch }}-install.tar.gz \
         -e SWIFT_TARGET_ARCH=${{ inputs.swift-target-arch }} \
         xtremekforever/swift-builder:${{ inputs.builder-tag }} \
-        /bin/bash
-      docker start swift-armv7-builder
+        tail -f /dev/null
   - name: Build Swift
     shell: bash
     run: |
