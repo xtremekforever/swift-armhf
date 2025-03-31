@@ -8,7 +8,6 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
     file                    \
     git                     \
     icu-devtools            \
-    libcurl4-openssl-dev    \
     libedit-dev             \
     libicu-dev              \
     libncurses5-dev         \
