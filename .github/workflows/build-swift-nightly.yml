@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        branch: ["swift-6.1-branch", "development"]
+        branch: ["swift-6.0.2-branch", "development"]
     env:
       SWIFT_TAG:
       SWIFT_BRANCH: ${{ matrix.branch }}
