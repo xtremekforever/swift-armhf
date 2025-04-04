@@ -1,12 +1,27 @@
 name: Build Swift Nightly
 
 on:
-  pull_request:
-  schedule:
-    - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Swift Nighly Branch'
+        required: true
+        default: 'development'
+        type: string
+      distribution:
+        description: 'Distribution'
+        required: true
+        default: 'debian-bookworm'
+        type: choice
+        options:
+          - ubuntu-focal
+          - ubuntu-jammy
+          - ubuntu-noble
+          - debian-bullseye
+          - debian-bookworm
 
 env:
-  DISTRIBUTION: debian-bookworm
+  DISTRIBUTION: ${{ inputs.distribution }}
 
 jobs:
   nightly:
@@ -16,9 +31,9 @@ jobs:
         branch: ["swift-6.1-branch", "development"]
     env:
       SWIFT_TAG:
-      SWIFT_BRANCH: ${{ matrix.branch }}
+      SWIFT_BRANCH: ${{ inputs.branch }}
       SWIFT_PLATFORM: ubuntu2204
-      SWIFT_VERSION: ${{ matrix.branch }}
+      SWIFT_VERSION: ${{ inputs.branch }}
       SWIFT_WORKSPACE_CACHE: swift-workspace
     name: Build Swift Nigtly
     runs-on: ubuntu-latest
