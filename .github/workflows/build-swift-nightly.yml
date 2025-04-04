@@ -1,4 +1,5 @@
 name: Build Swift Nightly
+run-name: Build Swift Nightly for ${{ inputs.branch }} ${{ inputs.distribution }}
 
 on:
   workflow_dispatch:
@@ -28,10 +29,6 @@ env:
 
 jobs:
   nightly:
-    strategy:
-      fail-fast: false
-      matrix:
-        branch: ["swift-6.1-branch", "development"]
     env:
       SWIFT_TAG:
       SWIFT_BRANCH: ${{ inputs.branch }}
