@@ -7,6 +7,11 @@ mkdir -p $SWIFT_TESTING_BUILDDIR
 rm -rf $SWIFT_TESTING_INSTALL_PREFIX
 mkdir -p $SWIFT_TESTING_INSTALL_PREFIX
 
+# TODO: Exit testing still does not build properly in 6.1 snapshots
+if [[ $SWIFT_VERSION == *"swift-6.1-DEVELOPMENT"* ]]; then
+    SWIFTC_FLAGS="${SWIFTC_FLAGS} -D SWT_NO_EXIT_TESTS"
+fi
+
 echo "Configure Testing"
 rm -rf $SWIFT_TESTING_BUILDDIR/CMakeCache.txt
 cmake -S $SWIFT_TESTING_SRCDIR -B $SWIFT_TESTING_BUILDDIR -G Ninja \
