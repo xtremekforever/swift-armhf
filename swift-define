@@ -5,13 +5,19 @@ SWIFT_TARGET_ARCH=${SWIFT_TARGET_ARCH:=armv7}
 case ${SWIFT_TARGET_ARCH} in
     armv6)
         CMAKE_TARGET_ARCH="armv6l"
+        DEBIAN_TARGET_ARCH=armhf
         # The only version of armv6 supported is the RPI ARM1176JZF-S, which is only supported by Raspbian
         # If you attempt to build for armv6 with a Ubuntu or Debian sysroot, binaries will fail to run!!!
         EXTRA_FLAGS="-march=armv6 -mfpu=vfp -mfloat-abi=hard"
         ;;
     armv7)
         CMAKE_TARGET_ARCH="armv7-a"
+        DEBIAN_TARGET_ARCH=armhf
         EXTRA_FLAGS="-march=${CMAKE_TARGET_ARCH} -mfpu=neon -mfloat-abi=hard"
+        ;;
+    aarch64)
+        CMAKE_TARGET_ARCH="aarch64"
+        DEBIAN_TARGET_ARCH=arm64
         ;;
     *)
         echo "Unsupported architecture $SWIFT_TARGET_ARCH!"
@@ -28,7 +34,7 @@ fi
 SRC_ROOT="${SRC_ROOT:=$(pwd)}"
 XCTOOLCHAIN="${XCTOOLCHAIN:=$SRC_ROOT/build/$SWIFT_VERSION-armv7-debian12.xctoolchain}"
 XCTOOLCHAIN_SDK="${XCTOOLCHAIN_SDK:=/tmp/cross-toolchain/debian-bookworm.sdk}"
-STAGING_DIR="${STAGING_DIR:=$SRC_ROOT/sysroot-debian-bookworm}"
+STAGING_DIR="${STAGING_DIR:=$SRC_ROOT/sysroot-debian-bookworm-$DEBIAN_TARGET_ARCH}"
 if [[ $OSTYPE == 'darwin'* ]]; then
     SWIFT_NATIVE_PATH="${SWIFT_NATIVE_PATH:=$XCTOOLCHAIN/usr/bin}"
 else

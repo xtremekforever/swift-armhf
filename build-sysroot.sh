@@ -8,8 +8,10 @@ DISTRIBUTION_NAME=$1
 DISTRIUBTION_VERSION=$2
 SYSROOT=$3
 
+TARGET_ARCH=${TARGET_ARCH:=armhf}
+
 if [ -z $SYSROOT ]; then
-    SYSROOT=sysroot-$DISTRIBUTION_NAME-$DISTRIUBTION_VERSION
+    SYSROOT=sysroot-$DISTRIBUTION_NAME-$DISTRIUBTION_VERSION-$TARGET_ARCH
 fi
 SYSROOT=$(pwd)/$SYSROOT
 
@@ -172,12 +174,16 @@ else
     echo "Starting up qemu emulation"
     docker run --privileged --rm tonistiigi/binfmt --install all
 
-    CONTAINER_NAME=swift-armhf-sysroot
+    CONTAINER_NAME=swift-$TARGET_ARCH-sysroot
 
-    echo "Building $DISTRIBUTION distribution for sysroot"
+    echo "Building $DISTRIBUTION distribution for $TARGET_ARCH sysroot"
+
+    # Cleanup image and container if they exist to allow changing arch
+    docker image rm --force $DISTRIBUTION
     docker rm --force $CONTAINER_NAME
+
     docker run \
-        --platform linux/armhf \
+        --platform linux/$TARGET_ARCH \
         --name $CONTAINER_NAME \
         $DISTRIBUTION \
         /bin/bash -c "$INSTALL_DEPS_CMD"
