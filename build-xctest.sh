@@ -38,8 +38,5 @@ cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
         -DCMAKE_Swift_FLAGS_RELEASE="" \
         -DCMAKE_Swift_FLAGS_RELWITHDEBINFO="" \
 
-echo "Build XCTest ${STATIC}"
-(cd $XCTEST_BUILDDIR && ninja)
-
-echo "Install XCTest ${STATIC}"
+echo "Build & Install XCTest ${STATIC}"
 (cd $XCTEST_BUILDDIR && ninja install)

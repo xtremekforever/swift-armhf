@@ -47,7 +47,8 @@ ARG SWIFT_WEBROOT=https://download.swift.org
 ENV SWIFT_PLATFORM=$SWIFT_PLATFORM \
     SWIFT_BRANCH=$SWIFT_BRANCH \
     SWIFT_VERSION=$SWIFT_VERSION \
-    SWIFT_WEBROOT=$SWIFT_WEBROOT
+    SWIFT_WEBROOT=$SWIFT_WEBROOT \
+    SWIFT_INSTALL_PATH=/opt/$SWIFT_VERSION
 
 RUN set -e; \
     ARCH_NAME="$(dpkg --print-architecture)"; \
@@ -70,11 +71,14 @@ RUN set -e; \
     # - Download the GPG keys, Swift toolchain, and toolchain signature, and verify.
     && curl -fsSL "$SWIFT_BIN_URL" -o swift.tar.gz \
     # - Unpack the toolchain, set libs permissions, and clean up.
-    && tar -xzf swift.tar.gz --directory / --strip-components=1 \
-    && chmod -R o+r /usr/lib/swift \
+    && mkdir -p $SWIFT_INSTALL_PATH \
+    && tar -xzf swift.tar.gz --directory $SWIFT_INSTALL_PATH --strip-components=1 \
+    && chmod -R o+r $SWIFT_INSTALL_PATH/usr/lib/swift \
     && apt-get purge --auto-remove -y curl
 
 # Print Installed Swift Version
+ENV SWIFT_NATIVE_PATH=$SWIFT_INSTALL_PATH/usr/bin
+ENV PATH=$SWIFT_NATIVE_PATH:$PATH
 RUN swift --version
 
 # Add user for building, customizable

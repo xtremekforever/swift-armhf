@@ -36,9 +36,5 @@ cmake -S $LIBDISPATCH_SRCDIR -B $LIBDISPATCH_BUILDDIR -G Ninja \
         -DCMAKE_Swift_FLAGS_RELEASE="" \
         -DCMAKE_Swift_FLAGS_RELWITHDEBINFO="" \
 
-echo "Build Dispatch ${STATIC}"
-(cd $LIBDISPATCH_BUILDDIR && ninja)
-
-echo "Install Dispatch ${STATIC}"
+echo "Build & Install Dispatch ${STATIC}"
 (cd $LIBDISPATCH_BUILDDIR && ninja install)
-
