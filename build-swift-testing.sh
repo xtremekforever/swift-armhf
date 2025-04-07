@@ -35,8 +35,5 @@ cmake -S $SWIFT_TESTING_SRCDIR -B $SWIFT_TESTING_BUILDDIR -G Ninja \
     -DFoundation_DIR="${FOUNDATION_BUILDDIR}/cmake/modules" \
     -DSwiftTesting_MACRO="${SWIFT_NATIVE_PATH}/../lib/swift/host/plugins/libTestingMacros.so" \
 
-echo "Build Testing"
-(cd $SWIFT_TESTING_BUILDDIR && ninja)
-
-echo "Install Testing"
+echo "Build & Install Testing"
 (cd $SWIFT_TESTING_BUILDDIR && ninja install)
