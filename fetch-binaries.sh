@@ -34,7 +34,7 @@ if [[ -d "$STAGING_DIR/usr/lib" ]]; then
     echo "Use existing Sysroot"
 else
     # Build Debian 12 sysroot
-    ./build-sysroot.sh debian bookworm
+    TARGET_ARCH=$DEBIAN_TARGET_ARCH ./build-sysroot.sh debian bookworm
 fi
 
 if [[ $OSTYPE == 'darwin'* ]]; then
