@@ -20,9 +20,9 @@ on:
         options:
           - ubuntu-focal
           - ubuntu-jammy
-          - ubuntu-nobles
+          - ubuntu-noble
           - debian-bullseye
-          - debian-bookworms
+          - debian-bookworm
 
 jobs:
   nightly:
