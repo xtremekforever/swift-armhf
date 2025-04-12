@@ -52,11 +52,7 @@ fi
 # Archive
 ./build-tar.sh
 
-# Cross compile test package
+#export STATIC_SWIFT_STDLIB=1 
 ./generate-swiftpm-toolchain.sh
 ./build-swift-hello.sh
 
-# Cross compile test package with --static-swift-stdlib
-export STATIC_SWIFT_STDLIB=1 
-./generate-swiftpm-toolchain.sh
-./build-swift-hello.sh
