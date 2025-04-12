@@ -63,7 +63,14 @@ cmake -S $SWIFT_SRCDIR -B $SWIFT_BUILDDIR -G Ninja \
         -DCMAKE_Swift_FLAGS_DEBUG="" \
         -DCMAKE_Swift_FLAGS_RELEASE="" \
         -DCMAKE_Swift_FLAGS_RELWITHDEBINFO="" \
-        -DCMAKE_OSX_SYSROOT=""
+        -DCMAKE_OSX_SYSROOT="" \
+        -DCMAKE_EXE_LINKER_FLAGS="-L/opt/swift-armv7/sysroot-imx8/lib/aarch64-poky-linux/13.3.0/" \ 
+        -DCMAKE_C_STARTUP_OBJECTS="/opt/swift-armv7/sysroot-imx8/lib/aarch64-poky-linux/13.3.0/crtbeginS.o" \
+        -DCMAKE_C_END_OF_STATIC_LIBS="/opt/swift-armv7/sysroot-imx8/lib/aarch64-poky-linux/13.3.0/crtendS.o" \
+        -DCMAKE_CXX_STARTUP_OBJECTS="/opt/swift-armv7/sysroot-imx8/lib/aarch64-poky-linux/13.3.0/crtbeginS.o" \
+        -DCMAKE_CXX_END_OF_STATIC_LIBS="/opt/swift-armv7/sysroot-imx8/lib/aarch64-poky-linux/13.3.0/crtendS.o"
+        -DCMAKE_Swift_STARTUP_OBJECTS="/opt/swift-armv7/sysroot-imx8/lib/aarch64-poky-linux/13.3.0/crtbeginS.o" \
+        -DCMAKE_Swift_END_OF_STATIC_LIBS="/opt/swift-armv7/sysroot-imx8/lib/aarch64-poky-linux/13.3.0/crtendS.o" \
 
 echo "Build Swift StdLib"
 (cd $SWIFT_BUILDDIR && ninja)
