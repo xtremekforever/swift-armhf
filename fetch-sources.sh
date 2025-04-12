@@ -15,7 +15,7 @@ if [[ -d "$SWIFT_SRCDIR" ]]; then
     git stash
 else
     echo "Checkout Swift"
-    git clone https://github.com/apple/swift.git
+    git clone https://github.com/swiftlang/swift.git --depth 1
     cd $SWIFT_SRCDIR
 fi
 
