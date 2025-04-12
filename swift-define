@@ -20,7 +20,7 @@ case ${SWIFT_TARGET_ARCH} in
     aarch64)
         CMAKE_TARGET_ARCH="aarch64"
         DEBIAN_TARGET_ARCH=arm64
-        SWIFT_TARGET_NAME=${SWIFT_TARGET_ARCH}-unknown-linux-gnu
+        SWIFT_TARGET_NAME=${SWIFT_TARGET_ARCH}-poky-linux
         ;;
     *)
         echo "Unsupported architecture $SWIFT_TARGET_ARCH!"
@@ -36,7 +36,7 @@ fi
 SRC_ROOT="${SRC_ROOT:=$(pwd)}"
 XCTOOLCHAIN="${XCTOOLCHAIN:=$SRC_ROOT/build/$SWIFT_VERSION-armv7-debian12.xctoolchain}"
 XCTOOLCHAIN_SDK="${XCTOOLCHAIN_SDK:=/tmp/cross-toolchain/debian-bookworm.sdk}"
-STAGING_DIR="${STAGING_DIR:=$SRC_ROOT/sysroot-debian-bookworm-$DEBIAN_TARGET_ARCH}"
+STAGING_DIR="${STAGING_DIR:=$SRC_ROOT/sysroot-imx8}"
 if [[ $OSTYPE == 'darwin'* ]]; then
     SWIFT_NATIVE_PATH="${SWIFT_NATIVE_PATH:=$XCTOOLCHAIN/usr/bin}"
 else
