@@ -47,11 +47,6 @@ SWIFTPM_CONFIGURATION="${SWIFTPM_CONFIGURATION:=release}"
 SWIFT_PACKAGE_SRCDIR="${SWIFT_PACKAGE_SRCDIR:=$SRC_ROOT/swift-hello}"
 SWIFT_PACKAGE_BUILDDIR="${SWIFT_PACKAGE_BUILDDIR:=$SWIFT_PACKAGE_SRCDIR/.build}"
 CROSS_TOOLCHAIN_FILE="${CROSS_TOOLCHAIN_FILE:=$SRC_ROOT/build/build-toolchain-${SWIFT_TARGET_ARCH}.cmake}"
-if [ -d ${STAGING_DIR} ]; then
-    GCC_INSTALL_DIR=$(dirname $(find ${STAGING_DIR} -name crtbegin.o))
-else
-    GCC_INSTALL_DIR=${STAGING_DIR}
-fi
 
 # Build Paths
 LLVM_SRCDIR=$SRC_ROOT/downloads/llvm-project
@@ -84,10 +79,11 @@ INSTALL_PREFIX=$SRC_ROOT/build/swift-install/usr
 INSTALL_TAR=${INSTALL_TAR:=$SRC_ROOT/build/$SWIFT_VERSION-$SWIFT_TARGET_ARCH.tar.gz}
 PREBUILT_XCTOOLCHAIN=$SRC_ROOT/downloads/${SWIFT_VERSION}-osx.pkg
 
+EXTRA_YOCTO_FLAGS="-L/opt/swift-armv7/sysroot-imx8/lib/aarch64-poky-linux/13.3.0 -v"
 # Compilation flags
-RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-LINK_FLAGS="--sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
+RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS} ${EXTRA_YOCTO_FLAGS}"
+LINK_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS} ${EXTRA_YOCTO_FLAGS}"
+ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_YOCTO_FLAGS}"
 
 SWIFTC_FLAGS="-target ${SWIFT_TARGET_NAME} ${EXTRA_YOCTO_FLAGS} \
 -use-ld=lld \
