@@ -1,5 +1,3 @@
-set(CMAKE_SYSTEM_NAME Generic-ELF)
-set(CMAKE_SYSTEM_PROCESSOR ARM)
 
 set(TOOLCHAIN_PREFIX arm-none-eabi-)
 set(TOOLCHAIN_TRIPLE arm-none-eabi)
