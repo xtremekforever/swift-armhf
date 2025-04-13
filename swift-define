@@ -100,5 +100,5 @@ ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
 SWIFTC_FLAGS="-target ${SWIFT_TARGET_NAME} \
 -use-ld=lld \
 -sdk ${STAGING_DIR} \
--resource-dir ${SWIFT_BUILDDIR}/lib/swift
+-resource-dir ${SWIFT_BUILDDIR}/lib/swift \
 "
