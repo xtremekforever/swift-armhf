@@ -80,12 +80,25 @@ INSTALL_TAR=${INSTALL_TAR:=$SRC_ROOT/build/$SWIFT_VERSION-$SWIFT_TARGET_ARCH.tar
 PREBUILT_XCTOOLCHAIN=$SRC_ROOT/downloads/${SWIFT_VERSION}-osx.pkg
 
 # Compilation flags
-RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-LINK_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
+
+# If GCC_VERSION is passed, we assume that there's a non-standard layout in the sysroot for it
+# to be auto-detected
+if [ $GCC_VERSION ]; then
+    EXTRA_INCLUDES="$EXTRA_INCLUDES -I${STAGING_DIR}/usr/include -I${STAGING_DIR}/usr/include/c++/${GCC_VERSION}"
+    if [ $GCC_CUSTOM_TRIPLE ]; then
+        EXTRA_FLAGS="$EXTRA_FLAGS --gcc-install-dir=${STAGING_DIR}/usr/lib/${GCC_CUSTOM_TRIPLE}/${GCC_VERSION}"
+        EXTRA_INCLUDES="$EXTRA_INCLUDES -I${STAGING_DIR}/usr/include/c++/${GCC_VERSION}/${GCC_CUSTOM_TRIPLE}"
+    fi
+fi
+echo "Extra Includes: ${EXTRA_INCLUDES}"
+echo "Extra Flags: ${EXTRA_FLAGS}"
+
+RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_INCLUDES} ${EXTRA_FLAGS}"
+LINK_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_INCLUDES} ${EXTRA_FLAGS}"
 ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
 
 SWIFTC_FLAGS="-target ${SWIFT_TARGET_NAME} \
 -use-ld=lld \
 -sdk ${STAGING_DIR} \
--resource-dir ${SWIFT_BUILDDIR}/lib/swift \
+-resource-dir ${SWIFT_BUILDDIR}/lib/swift
 "
