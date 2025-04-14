@@ -49,9 +49,9 @@ cmake -S $SWIFT_SRCDIR -B $SWIFT_BUILDDIR -G Ninja \
         -DSWIFT_PATH_TO_SWIFT_SYNTAX_SOURCE=${SYNTAX_SRCDIR} \
         -DSWIFT_PATH_TO_STRING_PROCESSING_SOURCE=${STRING_PROCESSING_SRCDIR} \
         -DSWIFT_ENABLE_EXPERIMENTAL_STRING_PROCESSING=ON \
-        -DSWIFT_ENABLE_EXPERIMENTAL_CXX_INTEROP=ON \
-        -DSWIFT_ENABLE_CXX_INTEROP_SWIFT_BRIDGING_HEADER=ON \
-        -DSWIFT_BUILD_STDLIB_CXX_MODULE=ON \
+        -DSWIFT_ENABLE_EXPERIMENTAL_CXX_INTEROP=OFF \
+        -DSWIFT_ENABLE_CXX_INTEROP_SWIFT_BRIDGING_HEADER=OFF \
+        -DSWIFT_BUILD_STDLIB_CXX_MODULE=OFF \
         -DSWIFT_ENABLE_EXPERIMENTAL_DIFFERENTIABLE_PROGRAMMING=ON \
         -DSWIFT_ENABLE_EXPERIMENTAL_DISTRIBUTED=ON \
         -DSWIFT_ENABLE_EXPERIMENTAL_NONESCAPABLE_TYPES=ON \
@@ -74,8 +74,8 @@ echo "Install Swift StdLib"
 (cd $SWIFT_BUILDDIR && ninja install)
 
 # https://github.com/swiftlang/swift/issues/78003
-echo "Fix libswiftCxx installation location..."
-cp -rf ${SWIFT_INSTALL_PREFIX}/lib/swift/linux/libswiftCxx*.a ${SWIFT_INSTALL_PREFIX}/lib/swift_static/linux
+#echo "Fix libswiftCxx installation location..."
+#cp -rf ${SWIFT_INSTALL_PREFIX}/lib/swift/linux/libswiftCxx*.a ${SWIFT_INSTALL_PREFIX}/lib/swift_static/linux
 
 echo "Install Swift Stdlib to sysroot"
 cp -rf ${SWIFT_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
