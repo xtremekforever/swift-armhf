@@ -9,7 +9,8 @@ mkdir -p $SWIFT_INSTALL_PREFIX
 echo "Configure Swift"
 rm -rf $SWIFT_BUILDDIR/CMakeCache.txt
 cmake -S $SWIFT_SRCDIR -B $SWIFT_BUILDDIR -G Ninja \
-        -DXML_LIBRARY=${STAGING_DIR}/usr/lib/libxml2.so.2.12.8
+        -DLIBXML2_LIBRARY=${STAGING_DIR}/usr/lib/libxml2.so.2.12.8 \
+        -DLibEdit_LIBRARIES=${STAGING_DIR}/usr/lib/libedit.so.0.0.72 \
         -DCMAKE_INSTALL_PREFIX=${SWIFT_INSTALL_PREFIX} \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=${SWIFT_BUILD_CONFIGURATION} \
