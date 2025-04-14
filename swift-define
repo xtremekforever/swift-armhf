@@ -21,6 +21,7 @@ case ${SWIFT_TARGET_ARCH} in
         CMAKE_TARGET_ARCH="aarch64"
         DEBIAN_TARGET_ARCH=arm64
         SWIFT_TARGET_NAME=${SWIFT_TARGET_ARCH}-poky-linux
+        SWIFT_TARGET_NAME_PREFIX=${SWIFT_TARGET_ARCH}-poky-linux-
         ;;
     *)
         echo "Unsupported architecture $SWIFT_TARGET_ARCH!"
@@ -84,10 +85,12 @@ INSTALL_PREFIX=$SRC_ROOT/build/swift-install/usr
 INSTALL_TAR=${INSTALL_TAR:=$SRC_ROOT/build/$SWIFT_VERSION-$SWIFT_TARGET_ARCH.tar.gz}
 PREBUILT_XCTOOLCHAIN=$SRC_ROOT/downloads/${SWIFT_VERSION}-osx.pkg
 
+EXTRA_YOCTO_FLAGS="-I${STAGING_DIR}/usr/include/c++/13.3.0  -I${STAGING_DIR}/usr/include/c++/13.3.0/${SWIFT_TARGET_NAME}"
+
 # Compilation flags
-RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-LINK_FLAGS="--sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
+RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR}  -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS} ${EXTRA_YOCTO_FLAGS}"
+LINK_FLAGS="--sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS} ${EXTRA_YOCTO_FLAGS}"
+ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_YOCTO_FLAGS}"
 
 SWIFTC_FLAGS="-target ${SWIFT_TARGET_NAME} ${EXTRA_YOCTO_FLAGS} \
 -use-ld=lld \
