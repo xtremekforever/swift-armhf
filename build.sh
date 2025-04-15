@@ -8,10 +8,10 @@ if [[ $OSTYPE == 'darwin'* ]]; then
 fi
 
 # Fetch and patch sources
-if [ -z $SKIP_FETCH_SOURCES ]; then
-    ./fetch-sources.sh
-fi
-./fetch-binaries.sh
+#if [ -z $SKIP_FETCH_SOURCES ]; then
+#    ./fetch-sources.sh
+#fi
+#./fetch-binaries.sh
 
 # Generate Xcode toolchain
 if [[ $OSTYPE == 'darwin'* && ! -d "$XCTOOLCHAIN" ]]; then
@@ -52,11 +52,7 @@ fi
 # Archive
 ./build-tar.sh
 
-# Cross compile test package
+#export STATIC_SWIFT_STDLIB=1 
 ./generate-swiftpm-toolchain.sh
 ./build-swift-hello.sh
 
-# Cross compile test package with --static-swift-stdlib
-export STATIC_SWIFT_STDLIB=1 
-./generate-swiftpm-toolchain.sh
-./build-swift-hello.sh

@@ -13,4 +13,4 @@ cmake -S $LLVM_SRCDIR/llvm -B $LLVM_BUILDDIR -G Ninja \
         -DCMAKE_CXX_COMPILER=$SWIFT_NATIVE_PATH/clang++ \
         -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64" \
         -DLLVM_ENABLE_PROJECTS="llvm" \
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=Release --fresh

@@ -1,6 +1,6 @@
 # Version
 SWIFT_VERSION=${SWIFT_VERSION:=swift-6.1-RELEASE}
-SWIFT_TARGET_ARCH=${SWIFT_TARGET_ARCH:=armv7}
+#SWIFT_TARGET_ARCH=${SWIFT_TARGET_ARCH:=armv7}
 
 case ${SWIFT_TARGET_ARCH} in
     armv6)
@@ -20,7 +20,8 @@ case ${SWIFT_TARGET_ARCH} in
     aarch64)
         CMAKE_TARGET_ARCH="aarch64"
         DEBIAN_TARGET_ARCH=arm64
-        SWIFT_TARGET_NAME=${SWIFT_TARGET_ARCH}-unknown-linux-gnu
+        SWIFT_TARGET_NAME=${SWIFT_TARGET_ARCH}-poky-linux
+        SWIFT_TARGET_NAME_PREFIX=${SWIFT_TARGET_ARCH}-poky-linux-
         ;;
     *)
         echo "Unsupported architecture $SWIFT_TARGET_ARCH!"
@@ -36,7 +37,7 @@ fi
 SRC_ROOT="${SRC_ROOT:=$(pwd)}"
 XCTOOLCHAIN="${XCTOOLCHAIN:=$SRC_ROOT/build/$SWIFT_VERSION-armv7-debian12.xctoolchain}"
 XCTOOLCHAIN_SDK="${XCTOOLCHAIN_SDK:=/tmp/cross-toolchain/debian-bookworm.sdk}"
-STAGING_DIR="${STAGING_DIR:=$SRC_ROOT/sysroot-debian-bookworm-$DEBIAN_TARGET_ARCH}"
+STAGING_DIR="${STAGING_DIR:=$SRC_ROOT/sysroot-imx8}"
 if [[ $OSTYPE == 'darwin'* ]]; then
     SWIFT_NATIVE_PATH="${SWIFT_NATIVE_PATH:=$XCTOOLCHAIN/usr/bin}"
 else
@@ -47,6 +48,11 @@ SWIFTPM_CONFIGURATION="${SWIFTPM_CONFIGURATION:=release}"
 SWIFT_PACKAGE_SRCDIR="${SWIFT_PACKAGE_SRCDIR:=$SRC_ROOT/swift-hello}"
 SWIFT_PACKAGE_BUILDDIR="${SWIFT_PACKAGE_BUILDDIR:=$SWIFT_PACKAGE_SRCDIR/.build}"
 CROSS_TOOLCHAIN_FILE="${CROSS_TOOLCHAIN_FILE:=$SRC_ROOT/build/build-toolchain-${SWIFT_TARGET_ARCH}.cmake}"
+if [ -d ${STAGING_DIR} ]; then
+    GCC_INSTALL_DIR=$(dirname $(find ${STAGING_DIR} -name crtbegin.o))
+else
+    GCC_INSTALL_DIR=${STAGING_DIR}
+fi
 
 # Build Paths
 LLVM_SRCDIR=$SRC_ROOT/downloads/llvm-project
@@ -79,13 +85,15 @@ INSTALL_PREFIX=$SRC_ROOT/build/swift-install/usr
 INSTALL_TAR=${INSTALL_TAR:=$SRC_ROOT/build/$SWIFT_VERSION-$SWIFT_TARGET_ARCH.tar.gz}
 PREBUILT_XCTOOLCHAIN=$SRC_ROOT/downloads/${SWIFT_VERSION}-osx.pkg
 
-# Compilation flags
-RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-LINK_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
+EXTRA_YOCTO_FLAGS="-I${STAGING_DIR}/usr/include/c++/13.3.0  -I${STAGING_DIR}/usr/include/c++/13.3.0/${SWIFT_TARGET_NAME}"
 
-SWIFTC_FLAGS="-target ${SWIFT_TARGET_NAME} \
+# Compilation flags
+RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR}  -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS} ${EXTRA_YOCTO_FLAGS}"
+LINK_FLAGS="--sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS} ${EXTRA_YOCTO_FLAGS}"
+ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_YOCTO_FLAGS}"
+
+SWIFTC_FLAGS="-target ${SWIFT_TARGET_NAME} ${EXTRA_YOCTO_FLAGS} \
 -use-ld=lld \
 -sdk ${STAGING_DIR} \
--resource-dir ${SWIFT_BUILDDIR}/lib/swift \
+-resource-dir ${SWIFT_BUILDDIR}/lib/swift \ 
 "
