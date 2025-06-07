@@ -11,7 +11,7 @@ on:
         type: choice
         options:
           - swift-6.0-branch
-          - swift-6.1.2-branch
+          - swift-6.1-branch
           - swift-6.2-branch
           - development
       distribution:
