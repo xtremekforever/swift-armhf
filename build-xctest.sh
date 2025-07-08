@@ -2,19 +2,25 @@
 set -e
 source swift-define
 
+if [ $STATIC_BUILD ]; then
+    XCTEST_BUILDDIR=$XCTEST_STATIC_BUILDDIR
+    XCTEST_INSTALL_PREFIX=$XCTEST_STATIC_INSTALL_PREFIX
+    BUILD_SHARED_LIBS=OFF
+    STATIC="Static"
+else
+    BUILD_SHARED_LIBS=ON
+fi
+
 echo "Create XCTest build folder ${XCTEST_BUILDDIR}"
 mkdir -p $XCTEST_BUILDDIR
 rm -rf $XCTEST_INSTALL_PREFIX
 mkdir -p $XCTEST_INSTALL_PREFIX
 
-# Workaround Dispatch defined with cmake and module
-rm -rf ${STAGING_DIR}/usr/lib/swift/dispatch
-
-echo "Configure XCTest"
+echo "Configure XCTest ${STATIC}"
 rm -rf $XCTEST_BUILDDIR/CMakeCache.txt
-LIBS="-latomic" cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
+cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
         -DCMAKE_INSTALL_PREFIX=${XCTEST_INSTALL_PREFIX} \
-        -DBUILD_SHARED_LIBS=ON \
+        -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} \
         -DCMAKE_BUILD_TYPE=${SWIFT_BUILD_CONFIGURATION} \
         -DCMAKE_C_COMPILER=${SWIFT_NATIVE_PATH}/clang \
         -DCMAKE_CXX_COMPILER=${SWIFT_NATIVE_PATH}/clang++ \
@@ -22,6 +28,7 @@ LIBS="-latomic" cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
         -DCMAKE_CXX_FLAGS="${RUNTIME_FLAGS}" \
         -DCMAKE_C_LINK_FLAGS="${LINK_FLAGS}" \
         -DCMAKE_CXX_LINK_FLAGS="${LINK_FLAGS}" \
+        -DCMAKE_TOOLCHAIN_FILE="${CROSS_TOOLCHAIN_FILE}" \
         -DCF_DEPLOYMENT_SWIFT=ON \
         -Ddispatch_DIR="${LIBDISPATCH_BUILDDIR}/cmake/modules" \
         -DFoundation_DIR="${FOUNDATION_BUILDDIR}/cmake/modules" \
@@ -31,15 +38,5 @@ LIBS="-latomic" cmake -S $XCTEST_SRCDIR -B $XCTEST_BUILDDIR -G Ninja \
         -DCMAKE_Swift_FLAGS_RELEASE="" \
         -DCMAKE_Swift_FLAGS_RELWITHDEBINFO="" \
 
-echo "Build XCTest"
-(cd $XCTEST_BUILDDIR && ninja)
-
-echo "Install XCTest"
+echo "Build & Install XCTest ${STATIC}"
 (cd $XCTEST_BUILDDIR && ninja install)
-
-# Restore Dispatch headers
-cp -rf ${LIBDISPATCH_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/
-
-echo "Install XCTest to sysroot"
-mv ${XCTEST_INSTALL_PREFIX}/lib/swift/linux/"$(uname -m)" ${XCTEST_INSTALL_PREFIX}/lib/swift/linux/${SWIFT_TARGET_ARCH}
-cp -rf ${XCTEST_INSTALL_PREFIX}/* ${STAGING_DIR}/usr/

@@ -26,20 +26,37 @@ rm -rf $STAGING_DIR/usr/lib/swift*
 # Build LLVM
 ./build-llvm.sh
 
+# This is required for cross-compiling dispatch, foundation, etc
+./create-cmake-toolchain.sh
+
 # Build Swift
 ./build-swift-stdlib.sh
+
+# Build corelibs shared
 ./build-dispatch.sh
 ./build-foundation.sh
 ./build-xctest.sh
 
-# NOTE: Swift-testing is disabled in 6.1 since it fails to compile
-if [[ $SWIFT_VERSION == *"6.0"* ]]; then
+# Build corelibs static
+STATIC_BUILD=1 ./build-dispatch.sh
+STATIC_BUILD=1 ./build-foundation.sh
+# We don't do XCTest and Testing because the official Swift distributions
+
+# Enable Swift Testing for 6.0 and later
+if [[ $SWIFT_VERSION == *"swift-6."* ]] || [[ $SWIFT_VERSION == *"swift-DEVELOPMENT"* ]]; then
     ./build-swift-testing.sh
 fi
+
+./deploy-to-sysroot.sh
 
 # Archive
 ./build-tar.sh
 
 # Cross compile test package
+./generate-swiftpm-toolchain.sh
+./build-swift-hello.sh
+
+# Cross compile test package with --static-swift-stdlib
+export STATIC_SWIFT_STDLIB=1 
 ./generate-swiftpm-toolchain.sh
 ./build-swift-hello.sh

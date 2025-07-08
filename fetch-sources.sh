@@ -15,7 +15,7 @@ if [[ -d "$SWIFT_SRCDIR" ]]; then
     git stash
 else
     echo "Checkout Swift"
-    git clone https://github.com/apple/swift.git
+    git clone https://github.com/swiftlang/swift.git --depth 1
     cd $SWIFT_SRCDIR
 fi
 
@@ -35,6 +35,7 @@ fi
     --skip-repository swift-async-algorithms \
     --skip-repository swift-atomics \
     --skip-repository swift-argument-parser \
+    --skip-repository swift-build \
     --skip-repository swift-certificates \
     --skip-repository swift-crypto \
     --skip-repository swift-docc \
@@ -64,11 +65,10 @@ fi
 
 # Apply patches
 echo "Apply CXX interop patch"
-patch -d . -p1 <$SRC_ROOT/patches/0001-Swift-fix-find-libstdc++-for-cxx-interop.patch
+patch -d . -p1 <$SRC_ROOT/patches/0002-Add-arm-to-float16support-for-missing-symbol.patch
 
-# Only applies to Swift 5.9
-if [[ $SWIFT_VERSION == *"5.9"* ]]; then
-    echo "Apply Foundation strlcpy/strlcat patch for Swift 5.9"
+if [[ $SWIFT_VERSION == *"5.9"* ]] || [[ $SWIFT_VERSION == *"5.10-"* ]]; then
+    echo "Apply Foundation strlcpy/strlcat patch"
     cd ../swift-corelibs-foundation
-    patch -d . -p1 <$SRC_ROOT/patches/0002-Foundation-5.9-check-for-strlcpy-strlcat.patch
+    patch -d . -p1 <$SRC_ROOT/patches/0002-Foundation-check-for-strlcpy-strlcat.patch
 fi

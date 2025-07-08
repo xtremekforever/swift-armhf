@@ -2,11 +2,11 @@ name: Build Swift Release
 
 on:
   push:
-    branches: [ "release/6.0.3" ]
+    branches: [ "release/6.1.2" ]
 
 env:
-  SWIFT_VERSION: "6.0.3"
-  SWIFT_TAG: swift-6.0.3-RELEASE
+  SWIFT_VERSION: "6.1.2"
+  SWIFT_TAG: swift-6.1.2-RELEASE
   SWIFT_WORKSPACE_CACHE: swift-workspace
 
 jobs:
@@ -23,6 +23,7 @@ jobs:
 
   build-for-distribution:
     strategy:
+      fail-fast: false
       matrix:
         distribution: [
           "debian-bullseye",
@@ -60,6 +61,7 @@ jobs:
 
   build-for-raspios:
     strategy:
+      fail-fast: false
       matrix:
         distribution-version: [
           "bullseye",
