@@ -65,6 +65,7 @@ fi
 
 # Apply patches
 echo "Apply CXX interop patch"
+patch -d . -p1 <$SRC_ROOT/patches/0001-Swift-fix-find-libstdc++-for-cxx-interop.patch
 patch -d . -p1 <$SRC_ROOT/patches/0002-Add-arm-to-float16support-for-missing-symbol.patch
 
 # Only applies to Swift 5.9
