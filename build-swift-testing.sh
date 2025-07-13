@@ -7,8 +7,8 @@ mkdir -p $SWIFT_TESTING_BUILDDIR
 rm -rf $SWIFT_TESTING_INSTALL_PREFIX
 mkdir -p $SWIFT_TESTING_INSTALL_PREFIX
 
-# TODO: Remove this workaround once exit testing builds in 6.1 for armv7
-if [[ $SWIFT_VERSION == *"swift-6.1"* ]]; then
+# TODO: Exit testing still does not build properly in 6.1 snapshots
+if [[ $SWIFT_VERSION == *"swift-6.1-DEVELOPMENT"* ]]; then
     SWIFTC_FLAGS="${SWIFTC_FLAGS} -D SWT_NO_EXIT_TESTS"
 fi
 
@@ -35,8 +35,5 @@ cmake -S $SWIFT_TESTING_SRCDIR -B $SWIFT_TESTING_BUILDDIR -G Ninja \
     -DFoundation_DIR="${FOUNDATION_BUILDDIR}/cmake/modules" \
     -DSwiftTesting_MACRO="${SWIFT_NATIVE_PATH}/../lib/swift/host/plugins/libTestingMacros.so" \
 
-echo "Build Testing"
-(cd $SWIFT_TESTING_BUILDDIR && ninja)
-
-echo "Install Testing"
+echo "Build & Install Testing"
 (cd $SWIFT_TESTING_BUILDDIR && ninja install)
