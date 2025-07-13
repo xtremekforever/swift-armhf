@@ -67,7 +67,7 @@ jobs:
           "bullseye",
           "bookworm"
         ]
-        swift-target-arch: ["armv6", "armv7"]
+        swift-target-arch: ["armv7"]
     name: Build for RaspiOS
     runs-on: ubuntu-latest
     needs: [fetch-sources]
