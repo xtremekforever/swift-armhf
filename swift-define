@@ -20,6 +20,10 @@ case ${SWIFT_TARGET_ARCH} in
 esac
 SWIFT_TARGET_NAME=${SWIFT_TARGET_ARCH}-unknown-linux-gnueabihf
 
+if [ $STATIC_SWIFT_STDLIB ]; then
+    STATIC_SUFFIX="-static"
+fi
+
 # Configurable
 SRC_ROOT="${SRC_ROOT:=$(pwd)}"
 XCTOOLCHAIN="${XCTOOLCHAIN:=$SRC_ROOT/build/$SWIFT_VERSION-armv7-debian12.xctoolchain}"
@@ -35,6 +39,11 @@ SWIFTPM_CONFIGURATION="${SWIFTPM_CONFIGURATION:=release}"
 SWIFT_PACKAGE_SRCDIR="${SWIFT_PACKAGE_SRCDIR:=$SRC_ROOT/swift-hello}"
 SWIFT_PACKAGE_BUILDDIR="${SWIFT_PACKAGE_BUILDDIR:=$SWIFT_PACKAGE_SRCDIR/.build}"
 CROSS_TOOLCHAIN_FILE="${CROSS_TOOLCHAIN_FILE:=$SRC_ROOT/build/build-toolchain-${SWIFT_TARGET_ARCH}.cmake}"
+if [ -d ${STAGING_DIR} ]; then
+    GCC_INSTALL_DIR=$(dirname $(find ${STAGING_DIR} -name crtbegin.o))
+else
+    GCC_INSTALL_DIR=${STAGING_DIR}
+fi
 
 # Build Paths
 LLVM_SRCDIR=$SRC_ROOT/downloads/llvm-project
@@ -57,17 +66,19 @@ FOUNDATION_STATIC_INSTALL_PREFIX=$SRC_ROOT/build/foundation-linux-$SWIFT_TARGET_
 XCTEST_SRCDIR=$SRC_ROOT/downloads/swift-corelibs-xctest
 XCTEST_BUILDDIR=$SRC_ROOT/build/xctest-linux-$SWIFT_TARGET_ARCH
 XCTEST_INSTALL_PREFIX=$SRC_ROOT/build/xctest-linux-$SWIFT_TARGET_ARCH-install
+XCTEST_STATIC_BUILDDIR=$SRC_ROOT/build/xctest-linux-$SWIFT_TARGET_ARCH-static
+XCTEST_STATIC_INSTALL_PREFIX=$SRC_ROOT/build/xctest-linux-$SWIFT_TARGET_ARCH-static-install
 SWIFT_TESTING_SRCDIR=$SRC_ROOT/downloads/swift-testing
 SWIFT_TESTING_BUILDDIR=$SRC_ROOT/build/swift-testing-linux-$SWIFT_TARGET_ARCH
 SWIFT_TESTING_INSTALL_PREFIX=$SRC_ROOT/build/swift-testing-linux-$SWIFT_TARGET_ARCH-install
-SWIFTPM_DESTINATION_FILE=$SRC_ROOT/build/$SWIFT_TARGET_NAME-toolchain.json
+SWIFTPM_DESTINATION_FILE=${SWIFTPM_DESTINATION_FILE:=$SRC_ROOT/build/$SWIFT_TARGET_NAME-toolchain$STATIC_SUFFIX.json}
 INSTALL_PREFIX=$SRC_ROOT/build/swift-install/usr
 INSTALL_TAR=${INSTALL_TAR:=$SRC_ROOT/build/$SWIFT_VERSION-$SWIFT_TARGET_ARCH.tar.gz}
 PREBUILT_XCTOOLCHAIN=$SRC_ROOT/downloads/${SWIFT_VERSION}-osx.pkg
 
 # Compilation flags
-RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
-LINK_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
+RUNTIME_FLAGS="-w -fuse-ld=lld --sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
+LINK_FLAGS="--sysroot=${STAGING_DIR} --gcc-install-dir=${GCC_INSTALL_DIR} -target ${SWIFT_TARGET_NAME} ${EXTRA_FLAGS}"
 ASM_FLAGS="--sysroot=${STAGING_DIR} -target ${SWIFT_TARGET_NAME}"
 
 SWIFTC_FLAGS="-target ${SWIFT_TARGET_NAME} \
