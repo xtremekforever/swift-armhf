@@ -1,21 +1,18 @@
-# Swift Runtime for Linux Armv7
+# Swift Runtime for Linux ARMHF
 
-Since Linux armv7 is not officially supported by the Swift project ([swiftlang](https://github.com/swiftlang)), this is an effort
-to maintain builds of the runtime that can be used for cross-compilation to armv7.
+Since Linux armhf (armv6 and armv7) is not officially supported by the Swift project ([swiftlang](https://github.com/swiftlang)), this is an effort
+to maintain builds of the runtime that can be used for cross-compilation to these architectures.
 
 Some main goals:
 
-- Build major versions of Swift (since 5.10) and provide build artifacts for various distributions that support armv7 (Ubuntu, Debian).
-- Provide SDKs that can be downloaded and used to cross-compile user applications and libraries to armv7.
+- Build major versions of Swift since 5.10 and provide build artifacts for various distributions that support armv7 (Ubuntu, Debian, Raspberry Pi OS).
+- Build major versions of Swift since 6.0 and provide build artifacts for Raspberry Pi OS for armv6.
+- Provide SDKs that can be downloaded and used to cross-compile user applications and libraries to armv6 and armv7.
 - Maintain a CI that can build snapshots/nightly versions of Swift to find and fix issues.
-
-NOTE: Building for armv6 is also now supported, although it is limited to working with the `raspios`
-distribution since that is the only version of Debian that supports the ARMv6 architecture. However,
-this makes this project also compatible with older Raspberry Pi models such as the RPI 1, Zero, and so on.
 
 ## Compilation
 
-There are various options for compiling Swift for armv7 with these scripts.
+There are various options for compiling Swift for armhf with these scripts.
 
 ### Build Swift runtime cross compiled from Linux
 
@@ -28,6 +25,16 @@ export SWIFT_NATIVE_PATH=/path/to/swift/toolchain
 
 NOTE: The toolchain pointed to by SWIFT_NATIVE_PATH should match the version of Swift being built.
 If not, failures will occur in the compilation.
+
+It is possible to build for armv6 as well by changing the build invocation:
+
+script:
+
+```bash
+export SWIFT_NATIVE_PATH=/path/to/swift/toolchain
+./build-sysroot raspios:bookworm
+SWIFT_TARGET_ARCH=armv6 STAGING_DIR=sysroot-raspios-bookworm ./build.sh
+```
 
 ### Build Swift runtime using custom sysroot
 
@@ -73,7 +80,7 @@ export SWIFT_NATIVE_PATH=/tmp/cross-toolchain/debian-bookworm.sdk
 
 ### Building a Cross Compilation SDK for Linux
 
-After building the armv7 runtime using the `build.sh` script, you can generate a redistributable SDK
+After building the armv6/armv7 runtime using the `build.sh` script, you can generate a redistributable SDK
 using the `build-linux-cross-sdk.sh` script. You must provide the swift tag and distribution name:
 
 ```bash
