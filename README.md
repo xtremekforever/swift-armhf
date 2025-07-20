@@ -60,20 +60,25 @@ swift build --destination /opt/swift-6.1.2-RELEASE-debian-bookworm-armv7/debian-
 
 There are various options for compiling Swift for armhf with these scripts.
 
+> [!NOTE]
+> These scripts require that Docker at least be installed with [multi-platform support](https://docs.docker.com/build/building/multi-platform/) enabled. The multi-platform support is used to build sysroots for various distributions, based on container images from Docker Hub.
+
 ### Build Swift Runtime in Container (Easy Way)
 
-The easiest way to compile the runtime is inside of the provided Docker container. This can be done from any macOS or Linux host with Docker installed. This ensures that you have the same version of Swift for the host as what you are compiling for the target.
+The easiest way to compile the runtime is inside of the provided Docker container. This ensures that you have the same version of Swift for the host as what you are compiling for the target.
 
-Invoke the `build-in-container.sh` script:
+Start by creating the default sysroot (debian bookworm), then run the `build-in-container.sh` script:
 
 ```bash
+./build-sysroot.sh debian bookworm
 ./build-in-container.sh
 ```
 
-Things such as `SWIFT_VERSION` and `SWIFT_TARGET_ARCH` can also be passed through environment variables:
+Things such as `STAGING_DIR`, `SWIFT_VERSION`, and `SWIFT_TARGET_ARCH` can also be passed through environment variables:
 
 ```bash
-SWIFT_VERSION=6.0 SWIFT_TARGET_ARCH=armv6 ./build-in-container.sh
+./build-sysroot raspios bookworm
+STAGING_DIR=sysroot-raspios-bookworm SWIFT_VERSION=6.0 SWIFT_TARGET_ARCH=armv6 ./build-in-container.sh
 ```
 
 ### Build Swift Runtime on Host
@@ -97,27 +102,13 @@ export SWIFT_NATIVE_PATH=/path/to/swift/toolchain
 STAGING_DIR=sysroot-raspios-bookworm SWIFT_TARGET_ARCH=armv6 ./build.sh
 ```
 
-### Build Swift Runtime using Custom Sysroot
+### Build Swift Runtime with Customized Sysroot
 
-To build a custom sysroot and use it to build, run the `build-sysroot.sh` script. This requires a
-working installation of Docker with [multi-platform support](https://docs.docker.com/build/building/multi-platform/) enabled.
-
-```bash
-./build-sysroot.sh ubuntu noble
-```
-
-Then, provide the `STAGING_DIR` env variable to the build script:
+Extra dependencies can also be installed into the sysroot if desired or needed, which in turn will be installed into the cross-compilation SDK (see [Building a Cross Compilation SDK for Linux](#building-a-cross-compilation-sdk-for-linux)). To do this, add the `EXTRA_DEPENDENCIES` environment variable:
 
 ```bash
-export STAGING_DIR=$(pwd)/sysroot-ubuntu-noble
-./build.sh
-```
-
-Extra dependencies can also be installed into the sysroot if desired or needed, which in turn will
-be installed into the cross-compilation SDK (see [Building a Cross Compilation SDK for Linux](#building-a-cross-compilation-sdk-for-linux)). To do this, use:
-
-```bash
-EXTRA_DEPENDENCIES="libsqlite3-dev" ./build-sysroot debian bookworm
+EXTRA_DEPENDENCIES="libsqlite3-dev" ./build-sysroot ubuntu noble
+STAGING_DIR=sysroot-ubuntu-noble ./build.sh
 ```
 
 ### Cross compile Swift package from Linux
